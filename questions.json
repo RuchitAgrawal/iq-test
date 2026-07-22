@@ -1,0 +1,42 @@
+[
+  {
+    "id": "seq-001",
+    "category": "sequence",
+    "difficulty": 1,
+    "prompt": "2, 4, 6, 8, ?",
+    "options": ["9", "10", "11", "12"],
+    "answer": "10"
+  },
+  {
+    "id": "seq-002",
+    "category": "sequence",
+    "difficulty": 2,
+    "prompt": "1, 4, 9, 16, ?",
+    "options": ["20", "24", "25", "30"],
+    "answer": "25"
+  },
+  {
+    "id": "logic-001",
+    "category": "logic",
+    "difficulty": 3,
+    "prompt": "If some Zorks are Snarks, and all Snarks are Boojums, are all Zorks Boojums?",
+    "options": ["Yes", "No", "Not enough information"],
+    "answer": "No"
+  },
+  {
+    "id": "pattern-001",
+    "category": "pattern",
+    "difficulty": 1,
+    "prompt": "Red is to Stop as Green is to...",
+    "options": ["Yield", "Go", "Caution", "Look"],
+    "answer": "Go"
+  },
+  {
+    "id": "spatial-001",
+    "category": "spatial",
+    "difficulty": 4,
+    "prompt": "A square paper is folded in half twice (into a smaller square) and a hole is punched through the center. How many holes are there when unfolded?",
+    "options": ["1", "2", "3", "4"],
+    "answer": "4"
+  }
+]
