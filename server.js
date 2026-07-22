@@ -44,9 +44,15 @@ app.get('/api/questions', (req, res) => {
 // API: Submit score
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+const { bot, postResultToGroup } = require('./bot');
+
+app.post('/bot' + (process.env.TELEGRAM_BOT_TOKEN || 'DUMMY_TOKEN'), (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+});
 
 app.post('/api/score', (req, res) => {
-    const { score, category_breakdown } = req.body;
+    const { score, category_breakdown, group_id, user_id } = req.body;
     const sessionId = req.body.session_id || uuidv4();
     const resultId = uuidv4();
     
@@ -66,7 +72,16 @@ app.post('/api/score', (req, res) => {
             console.error(err);
             return res.status(500).json({ error: 'Failed to save score' });
         }
-        res.json({ resultId, score, percentile, typeLabel });
+        
+        const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+        const imageUrl = `${appUrl}/api/image/${resultId}`;
+        
+        // Post back to Telegram if group_id is provided
+        if (group_id && user_id) {
+            postResultToGroup(group_id, user_id, score, imageUrl, typeLabel);
+        }
+        
+        res.json({ resultId, score, percentile, typeLabel, imageUrl });
     });
     stmt.finalize();
 });

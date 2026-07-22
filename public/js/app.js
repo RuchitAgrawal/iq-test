@@ -94,10 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = '100%';
         
         try {
+            // Get params from URL if started via Telegram Bot
+            const urlParams = new URLSearchParams(window.location.search);
+            const group_id = urlParams.get('group_id');
+            const user_id = urlParams.get('user_id'); // If you want to identify the user
+            
             const res = await fetch('/api/score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ score })
+                body: JSON.stringify({ score, group_id, user_id })
             });
             
             if (!res.ok) throw new Error('Failed to submit score');
@@ -110,9 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set up share button
             const shareBtn = document.getElementById('share-btn');
             shareBtn.onclick = () => {
-                const imageUrl = `${window.location.origin}/api/image/${resultData.resultId}`;
-                // For MVP, just open the image in a new tab so they can save/share it
-                window.open(imageUrl, '_blank');
+                // Open dynamic image URL
+                window.open(resultData.imageUrl, '_blank');
             };
         } catch (error) {
             console.error(error);

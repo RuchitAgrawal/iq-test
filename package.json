@@ -23,6 +23,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "node-telegram-bot-api": "^1.2.0",
     "satori": "^0.28.2",
     "sqlite3": "^6.0.1",
     "uuid": "^14.0.1"
