@@ -19,9 +19,12 @@
   },
   "homepage": "https://github.com/RuchitAgrawal/iq-test#readme",
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "sqlite3": "^6.0.1"
+    "satori": "^0.28.2",
+    "sqlite3": "^6.0.1",
+    "uuid": "^14.0.1"
   }
 }

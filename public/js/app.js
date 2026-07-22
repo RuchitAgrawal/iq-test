@@ -89,15 +89,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
-    function finishQuiz() {
+    async function finishQuiz() {
         showScreen('result');
         progressBar.style.width = '100%';
         
-        // MVP basic result
-        document.getElementById('score-display').innerText = `Score: ${score}`;
-        document.getElementById('type-label').innerText = 'Logical Thinker';
-        
-        // Phase 4 will call /api/score here
+        try {
+            const res = await fetch('/api/score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ score })
+            });
+            
+            if (!res.ok) throw new Error('Failed to submit score');
+            
+            const resultData = await res.json();
+            
+            document.getElementById('score-display').innerText = `Score: ${resultData.score} (Top ${100 - resultData.percentile}%)`;
+            document.getElementById('type-label').innerText = resultData.typeLabel;
+            
+            // Set up share button
+            const shareBtn = document.getElementById('share-btn');
+            shareBtn.onclick = () => {
+                const imageUrl = `${window.location.origin}/api/image/${resultData.resultId}`;
+                // For MVP, just open the image in a new tab so they can save/share it
+                window.open(imageUrl, '_blank');
+            };
+        } catch (error) {
+            console.error(error);
+            document.getElementById('score-display').innerText = `Score: ${score}`;
+            document.getElementById('type-label').innerText = 'Error saving result';
+        }
     }
 
     startBtn.addEventListener('click', () => {
