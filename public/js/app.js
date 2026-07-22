@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const startBtn = document.getElementById('start-btn');
+    const questionContainer = document.getElementById('question-container');
+    const progressBar = document.getElementById('progress-bar');
+    
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
     
     // Switch between screens
     function showScreen(screenName) {
@@ -17,8 +23,90 @@ document.addEventListener('DOMContentLoaded', () => {
         screens[screenName].classList.add('active');
     }
 
+    async function fetchQuestions() {
+        try {
+            const res = await fetch('/api/questions');
+            if (!res.ok) throw new Error('Failed to fetch questions');
+            questions = await res.json();
+            currentQuestionIndex = 0;
+            score = 0;
+            renderQuestion();
+        } catch (error) {
+            console.error(error);
+            questionContainer.innerHTML = '<p>Error loading questions. Please try again.</p>';
+        }
+    }
+
+    function renderQuestion() {
+        if (currentQuestionIndex >= questions.length) {
+            finishQuiz();
+            return;
+        }
+
+        const q = questions[currentQuestionIndex];
+        
+        // Update progress bar
+        const progressPercent = (currentQuestionIndex / questions.length) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+
+        let optionsHtml = '';
+        if (q.options && q.options.length > 0) {
+            optionsHtml = q.options.map(opt => `
+                <button class="option-btn" data-value="${opt}">${opt}</button>
+            `).join('');
+        }
+
+        questionContainer.innerHTML = `
+            <div class="question-prompt">
+                <span class="question-number">Question ${currentQuestionIndex + 1} of ${questions.length}</span>
+                <h2>${q.prompt}</h2>
+            </div>
+            <div class="options-grid">
+                ${optionsHtml}
+            </div>
+        `;
+
+        // Attach event listeners to options
+        const optionBtns = questionContainer.querySelectorAll('.option-btn');
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                handleAnswer(e.target.dataset.value, q);
+            });
+        });
+    }
+
+    function handleAnswer(selectedValue, question) {
+        if (selectedValue === question.answer) {
+            score += question.difficulty; // weighted score
+        }
+        
+        // Animate out, then show next
+        questionContainer.style.opacity = '0';
+        setTimeout(() => {
+            currentQuestionIndex++;
+            renderQuestion();
+            questionContainer.style.opacity = '1';
+        }, 300);
+    }
+
+    function finishQuiz() {
+        showScreen('result');
+        progressBar.style.width = '100%';
+        
+        // MVP basic result
+        document.getElementById('score-display').innerText = `Score: ${score}`;
+        document.getElementById('type-label').innerText = 'Logical Thinker';
+        
+        // Phase 4 will call /api/score here
+    }
+
     startBtn.addEventListener('click', () => {
-        showScreen('quiz');
-        // Logic to fetch questions and start quiz will go here
+        startBtn.innerText = 'Loading...';
+        startBtn.disabled = true;
+        fetchQuestions().then(() => {
+            showScreen('quiz');
+            startBtn.innerText = 'Start Quiz';
+            startBtn.disabled = false;
+        });
     });
 });
