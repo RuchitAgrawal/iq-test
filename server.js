@@ -51,22 +51,58 @@ app.post('/bot' + (process.env.TELEGRAM_BOT_TOKEN || 'DUMMY_TOKEN'), (req, res) 
 });
 
 app.post('/api/score', (req, res) => {
-    const { score, category_breakdown, group_id, user_id } = req.body;
+    const { score = 0, category_breakdown = {}, time_taken = 120, group_id, user_id } = req.body;
     const sessionId = req.body.session_id || uuidv4();
     const resultId = uuidv4();
     
-    // MVP Percentile calculation: fake it based on score 
-    // Assuming max score is ~40. >30 is top 5%, >20 is top 15%, etc.
     let percentile = 50;
-    if (score > 30) percentile = 95;
-    else if (score > 20) percentile = 85;
-    else if (score > 10) percentile = 60;
+    if (score >= 45) percentile = 98;
+    else if (score >= 35) percentile = 92;
+    else if (score >= 25) percentile = 84;
+    else if (score >= 15) percentile = 68;
     
-    // Fake "Type" calculation based on highest category (simplified for MVP)
-    const typeLabel = "Pattern Thinker"; 
+    const categories = {
+        sequence: category_breakdown.sequence || 0,
+        logic: category_breakdown.logic || 0,
+        pattern: category_breakdown.pattern || 0,
+        spatial: category_breakdown.spatial || 0
+    };
+    
+    let typeLabel = "Lateral Alchemist";
+    let accentColor = "#f59e0b";
+    let description = "Holistic mental agility blending creative leaps with structured calculation";
+    
+    const maxCat = Object.entries(categories).sort((a, b) => b[1] - a[1])[0] || ['logic', 0];
+    const totalCatScore = Object.values(categories).reduce((a, b) => a + b, 0);
+    
+    if (time_taken <= 75 && score >= 20) {
+        typeLabel = "Neural Speedster";
+        accentColor = "#ec4899";
+        description = "Rapid instinct and high-velocity pattern processing under time pressure";
+    } else if (maxCat[0] === 'logic' && maxCat[1] > (totalCatScore * 0.3)) {
+        typeLabel = "Logic Weaver";
+        accentColor = "#3b82f6";
+        description = "Mastery of rigorous deductive reasoning and structural analytical depth";
+    } else if ((maxCat[0] === 'pattern' || maxCat[0] === 'sequence') && maxCat[1] > (totalCatScore * 0.3)) {
+        typeLabel = "Pattern Seer";
+        accentColor = "#a855f7";
+        description = "Unusually heightened awareness of abstract geometries and mathematical ciphers";
+    } else if (maxCat[0] === 'spatial' && maxCat[1] > (totalCatScore * 0.3)) {
+        typeLabel = "Spatial Architect";
+        accentColor = "#10b981";
+        description = "Exceptional three-dimensional mental rotation and spatial geometry insight";
+    }
+    
+    const detailedData = {
+        categories,
+        archetype: typeLabel,
+        accentColor,
+        description,
+        timeTaken: time_taken
+    };
     
     const stmt = db.prepare("INSERT INTO results (id, session_id, score, percentile, category_breakdown) VALUES (?, ?, ?, ?, ?)");
-    stmt.run(resultId, sessionId, score, percentile, JSON.stringify(category_breakdown || {}), (err) => {
+    stmt.run(resultId, sessionId, score, percentile, JSON.stringify(detailedData), (err) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Failed to save score' });
@@ -75,12 +111,11 @@ app.post('/api/score', (req, res) => {
         const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
         const imageUrl = `${appUrl}/api/image/${resultId}`;
         
-        // Post back to Telegram if group_id is provided
         if (group_id && user_id) {
             postResultToGroup(group_id, user_id, score, imageUrl, typeLabel);
         }
         
-        res.json({ resultId, score, percentile, typeLabel, imageUrl });
+        res.json({ resultId, score, percentile, typeLabel, accentColor, description, imageUrl, categories });
     });
     stmt.finalize();
 });
