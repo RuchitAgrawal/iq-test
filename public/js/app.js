@@ -132,40 +132,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const statsGrid = document.getElementById('stats-grid');
         if (!statsGrid) return;
         
-        const catLabels = {
-            logic: "Deductive Logic",
-            pattern: "Pattern Cipher",
-            spatial: "3D Spatial Rotation",
-            sequence: "Abstract Sequence"
-        };
+        const color = accentColor || '#3b82f6';
+        const logicVal = categories.logic || 0;
+        const patternVal = categories.pattern || 0;
+        const spatialVal = categories.spatial || 0;
+        const sequenceVal = categories.sequence || 0;
 
-        const html = Object.entries(categories).map(([key, val]) => {
-            const label = catLabels[key] || key.toUpperCase();
-            const percent = Math.min(100, Math.max(15, Math.floor((val / 15) * 100)));
-            return `
-                <div class="stat-row">
-                    <div class="stat-labels">
-                        <span>${label}</span>
-                        <span>${val} pts</span>
-                    </div>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="width: 0%; background: ${accentColor || '#3b82f6'};"></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        const maxVal = Math.max(12, logicVal, patternVal, spatialVal, sequenceVal);
+        const getRatio = (val) => Math.max(0.15, Math.min(1.0, val / maxVal));
 
-        statsGrid.innerHTML = html;
+        const rLogic = getRatio(logicVal);
+        const rPattern = getRatio(patternVal);
+        const rSpatial = getRatio(spatialVal);
+        const rSequence = getRatio(sequenceVal);
 
-        setTimeout(() => {
-            const fills = statsGrid.querySelectorAll('.stat-fill');
-            Object.values(categories).forEach((val, index) => {
-                if (fills[index]) {
-                    const percent = Math.min(100, Math.max(15, Math.floor((val / 15) * 100)));
-                    fills[index].style.width = `${percent}%`;
-                }
-            });
-        }, 100);
+        const ptLogic = [180, 130 - 75 * rLogic];
+        const ptPattern = [180 + 75 * rPattern, 130];
+        const ptSpatial = [180, 130 + 75 * rSpatial];
+        const ptSequence = [180 - 75 * rSequence, 130];
+
+        const polyPoints = `${ptLogic[0]},${ptLogic[1]} ${ptPattern[0]},${ptPattern[1]} ${ptSpatial[0]},${ptSpatial[1]} ${ptSequence[0]},${ptSequence[1]}`;
+
+        const spiderSvg = `
+            <div class="spider-chart-container" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 10px 0;">
+                <svg viewBox="0 0 360 260" style="width: 100%; max-width: 360px; overflow: visible;">
+                    <polygon points="180,105 205,130 180,155 155,130" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <polygon points="180,80 230,130 180,180 130,130" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+                    <polygon points="180,55 255,130 180,205 105,130" fill="rgba(30,41,59,0.35)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                    
+                    <line x1="180" y1="55" x2="180" y2="205" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+                    <line x1="105" y1="130" x2="255" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+                    
+                    <polygon points="${polyPoints}" fill="${color}55" stroke="${color}" stroke-width="3" style="filter: drop-shadow(0px 0px 8px ${color}88);"/>
+                    
+                    <circle cx="${ptLogic[0]}" cy="${ptLogic[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle cx="${ptPattern[0]}" cy="${ptPattern[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle cx="${ptSpatial[0]}" cy="${ptSpatial[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle cx="${ptSequence[0]}" cy="${ptSequence[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    
+                    <text x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (${logicVal})</text>
+                    <text x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (${patternVal})</text>
+                    <text x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (${spatialVal})</text>
+                    <text x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (${sequenceVal})</text>
+                </svg>
+            </div>
+        `;
+
+        statsGrid.innerHTML = spiderSvg;
     }
 
     async function finishQuiz() {
@@ -233,7 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     shareBtn.disabled = true;
 
                     const testUrl = window.location.origin || 'http://localhost:3000';
-                    const shareText = `🧠 I just tested as a Top ${100 - resultData.percentile}% [${resultData.typeLabel}] on the TLQ Cognitive Matrix!\n⚡ Velocity: ${timeFormatted} | Score: ${resultData.score}\n🟩 ⏩ 🟨 ⏩ 🟩\nCan you surpass my analytical profile? Play right here 👉 ${testUrl}`;
+                    const statsSummary = `Logic: ${resultData.categories?.logic || 0} | Pattern: ${resultData.categories?.pattern || 0} | Spatial: ${resultData.categories?.spatial || 0} | Sequence: ${resultData.categories?.sequence || 0}`;
+                    const shareText = `🧠 TLQ COGNITIVE MATRIX\n👑 Rank: Top ${100 - resultData.percentile}% [${resultData.typeLabel}]\n⚡ Velocity: ${timeFormatted} | Score: ${resultData.score}\n🎯 Stats: ${statsSummary}\n\nCan you surpass my analytical agility? Play right here 👉 ${testUrl}`;
                     
                     let imageBlob = null;
                     let imageFile = null;
@@ -253,7 +267,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             await navigator.share({
                                 title: `TLQ Cognitive Profile: ${resultData.typeLabel}`,
                                 text: shareText,
-                                url: testUrl,
                                 files: [imageFile]
                             });
                             return;
