@@ -1,0 +1,5 @@
+node_modules/
+.env
+iqtest.db
+iqtest.db-journal
+*.log
