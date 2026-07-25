@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (q.options && q.options.length > 0) {
             optionsHtml = q.options.map(opt => `
                 <button class="option-btn" data-value="${opt}">
+                    <span class="option-indicator"></span>
                     <span>${opt}</span>
-                    <span>👉</span>
                 </button>
             `).join('');
         }
@@ -151,8 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const ptSpatial = [180, 130 + 75 * rSpatial];
         const ptSequence = [180 - 75 * rSequence, 130];
 
-        const polyPoints = `${ptLogic[0]},${ptLogic[1]} ${ptPattern[0]},${ptPattern[1]} ${ptSpatial[0]},${ptSpatial[1]} ${ptSequence[0]},${ptSequence[1]}`;
-
         const spiderSvg = `
             <div class="spider-chart-container" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 10px 0;">
                 <svg viewBox="0 0 360 260" style="width: 100%; max-width: 360px; overflow: visible;">
@@ -163,22 +161,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     <line x1="180" y1="55" x2="180" y2="205" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
                     <line x1="105" y1="130" x2="255" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
                     
-                    <polygon points="${polyPoints}" fill="${color}55" stroke="${color}" stroke-width="3" style="filter: drop-shadow(0px 0px 8px ${color}88);"/>
+                    <polygon id="spider-poly" points="180,130 180,130 180,130 180,130" fill="${color}55" stroke="${color}" stroke-width="3" style="filter: drop-shadow(0px 0px 8px ${color}88);"/>
                     
-                    <circle cx="${ptLogic[0]}" cy="${ptLogic[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
-                    <circle cx="${ptPattern[0]}" cy="${ptPattern[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
-                    <circle cx="${ptSpatial[0]}" cy="${ptSpatial[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
-                    <circle cx="${ptSequence[0]}" cy="${ptSequence[1]}" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle id="circle-logic" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle id="circle-pattern" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle id="circle-spatial" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
+                    <circle id="circle-sequence" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     
-                    <text x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (${logicVal})</text>
-                    <text x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (${patternVal})</text>
-                    <text x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (${spatialVal})</text>
-                    <text x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (${sequenceVal})</text>
+                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (0)</text>
+                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (0)</text>
+                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (0)</text>
+                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (0)</text>
                 </svg>
             </div>
         `;
 
         statsGrid.innerHTML = spiderSvg;
+
+        const poly = document.getElementById('spider-poly');
+        const cLogic = document.getElementById('circle-logic');
+        const cPattern = document.getElementById('circle-pattern');
+        const cSpatial = document.getElementById('circle-spatial');
+        const cSequence = document.getElementById('circle-sequence');
+        const lLogic = document.getElementById('lbl-logic');
+        const lPattern = document.getElementById('lbl-pattern');
+        const lSpatial = document.getElementById('lbl-spatial');
+        const lSequence = document.getElementById('lbl-sequence');
+
+        let startTime = null;
+        const duration = 1200;
+
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min(1, (timestamp - startTime) / duration);
+            const ease = 1 - Math.pow(1 - progress, 3);
+
+            const curLogicY = 130 - (130 - ptLogic[1]) * ease;
+            const curPatternX = 180 + (ptPattern[0] - 180) * ease;
+            const curSpatialY = 130 + (ptSpatial[1] - 130) * ease;
+            const curSequenceX = 180 - (180 - ptSequence[0]) * ease;
+
+            if (poly) poly.setAttribute('points', `${180},${curLogicY} ${curPatternX},${130} ${180},${curSpatialY} ${curSequenceX},${130}`);
+            if (cLogic) cLogic.setAttribute('cy', curLogicY);
+            if (cPattern) cPattern.setAttribute('cx', curPatternX);
+            if (cSpatial) cSpatial.setAttribute('cy', curSpatialY);
+            if (cSequence) cSequence.setAttribute('cx', curSequenceX);
+
+            if (lLogic) lLogic.textContent = `Logic (${Math.round(logicVal * ease)})`;
+            if (lPattern) lPattern.textContent = `Pattern (${Math.round(patternVal * ease)})`;
+            if (lSpatial) lSpatial.textContent = `Spatial (${Math.round(spatialVal * ease)})`;
+            if (lSequence) lSequence.textContent = `Sequence (${Math.round(sequenceVal * ease)})`;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+        requestAnimationFrame(animate);
     }
 
     async function finishQuiz() {
@@ -292,6 +330,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (shareModal) {
                         if (modalCardPreview) modalCardPreview.src = resultData.imageUrl;
                         shareModal.classList.remove('hidden');
+
+                        const copyImgBtn = document.getElementById('modal-copy-image-btn');
+                        const copyTxtBtn = document.getElementById('modal-copy-text-btn');
+
+                        if (copyImgBtn && imageBlob && navigator.clipboard && navigator.clipboard.write) {
+                            copyImgBtn.onclick = async () => {
+                                try {
+                                    const item = new ClipboardItem({ [imageBlob.type || 'image/png']: imageBlob });
+                                    await navigator.clipboard.write([item]);
+                                    copyImgBtn.innerText = '✅ Image Copied!';
+                                    setTimeout(() => { copyImgBtn.innerText = '🖼️ 1. Re-Copy Image'; }, 2500);
+                                } catch (err) {
+                                    console.error('Image copy failed:', err);
+                                }
+                            };
+                        }
+
+                        if (copyTxtBtn && navigator.clipboard && navigator.clipboard.writeText) {
+                            copyTxtBtn.onclick = async () => {
+                                try {
+                                    await navigator.clipboard.writeText(shareText);
+                                    copyTxtBtn.innerText = '✅ Caption Copied!';
+                                    setTimeout(() => { copyTxtBtn.innerText = '📝 2. Copy Caption Text'; }, 2500);
+                                } catch (err) {
+                                    console.error('Text copy failed:', err);
+                                }
+                            };
+                        }
 
                         if (whatsappBtn) {
                             whatsappBtn.onclick = () => {

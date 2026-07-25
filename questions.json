@@ -174,7 +174,7 @@
     "id": "spatial-004",
     "category": "spatial",
     "difficulty": 4,
-    "visual_svg": "<svg viewBox='0 0 200 100' width='100%' height='130' xmlns='http://www.w3.org/2000/svg'><g transform='translate(20,20)'><rect x='0' y='0' width='30' height='30' fill='#3b82f6' stroke='#0f172a'/><rect x='15' y='15' width='30' height='30' fill='#a855f7' stroke='#0f172a'/><rect x='30' y='30' width='30' height='30' fill='#10b981' stroke='#0f172a'/></g><text x='130' y='55' font-size='15' fill='#94a3b8' text-anchor='middle'>Overlapping Layers</text></svg>",
+    "visual_svg": "<svg viewBox='0 0 240 120' width='100%' height='140' xmlns='http://www.w3.org/2000/svg'><g transform='translate(75, 15)'><rect x='0' y='0' width='50' height='50' rx='8' fill='#3b82f6' stroke='#090d16' stroke-width='4' style='filter: drop-shadow(0px 4px 8px rgba(59,130,246,0.4))'/><rect x='22' y='22' width='50' height='50' rx='8' fill='#a855f7' stroke='#090d16' stroke-width='4' style='filter: drop-shadow(0px 4px 8px rgba(168,85,247,0.4))'/><rect x='44' y='44' width='50' height='50' rx='8' fill='#10b981' stroke='#090d16' stroke-width='4' style='filter: drop-shadow(0px 4px 8px rgba(16,185,129,0.4))'/></g></svg>",
     "prompt": "In the layered squares above, Blue is at the back and Green is at the front. If you reverse the stacking sequence so the back becomes front, which colored square will be partially covered by both of the other two squares?",
     "options": ["Blue square", "Purple square", "Green square", "None of them"],
     "answer": "Purple square"
