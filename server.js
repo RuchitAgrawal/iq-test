@@ -128,9 +128,16 @@ app.get('/api/image/:id', async (req, res) => {
         
         const fontData = fs.readFileSync(path.join(__dirname, 'arial.ttf'));
         
-        // Fetch result from DB
+        // Fetch result from DB and generate rich collectible card
         db.get("SELECT * FROM results WHERE id = ?", [req.params.id], async (err, row) => {
             if (err || !row) return res.status(404).send('Not found');
+            
+            let meta = { archetype: 'Lateral Alchemist', accentColor: '#3b82f6', description: 'Holistic mental agility blending creativity with structured calculation', categories: { logic: 0, pattern: 0, spatial: 0, sequence: 0 } };
+            try {
+                meta = { ...meta, ...JSON.parse(row.category_breakdown) };
+            } catch (e) {
+                console.error('Failed parsing breakdown for image', e);
+            }
             
             const svg = await satori(
                 {
@@ -141,32 +148,149 @@ app.get('/api/image/:id', async (req, res) => {
                             flexDirection: 'column',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: '#0f172a',
-                            color: '#f8fafc',
-                            fontFamily: 'Arial',
+                            width: 1200,
+                            height: 630,
+                            backgroundColor: '#090d16',
+                            padding: 30,
+                            fontFamily: 'Arial'
                         },
                         children: [
                             {
                                 type: 'div',
                                 props: {
-                                    style: { fontSize: 48, fontWeight: 800, marginBottom: 20 },
-                                    children: 'Cognitive Score'
-                                }
-                            },
-                            {
-                                type: 'div',
-                                props: {
-                                    style: { fontSize: 120, fontWeight: 800, color: '#3b82f6', marginBottom: 20 },
-                                    children: row.score.toString()
-                                }
-                            },
-                            {
-                                type: 'div',
-                                props: {
-                                    style: { fontSize: 32, color: '#10b981' },
-                                    children: `Top ${100 - row.percentile}%`
+                                    style: {
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between',
+                                        width: '100%',
+                                        height: '100%',
+                                        backgroundColor: '#111827',
+                                        border: `4px solid ${meta.accentColor}`,
+                                        borderRadius: 24,
+                                        padding: 45
+                                    },
+                                    children: [
+                                        // Header
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: {
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    width: '100%'
+                                                },
+                                                children: [
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { fontSize: 24, color: '#64748b', fontWeight: 800, letterSpacing: 2 },
+                                                            children: 'TLQ COGNITIVE DIAGNOSTIC'
+                                                        }
+                                                    },
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { display: 'flex', backgroundColor: '#1e293b', color: '#10b981', padding: '10px 24px', borderRadius: 30, fontSize: 26, fontWeight: 800 },
+                                                            children: `TOP ${100 - row.percentile}% RANK`
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        // Center Section
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: {
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    width: '100%',
+                                                    marginTop: 10
+                                                },
+                                                children: [
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { display: 'flex', flexDirection: 'column' },
+                                                            children: [
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: { fontSize: 110, fontWeight: 800, color: '#f8fafc', lineHeight: 1 },
+                                                                        children: row.score.toString()
+                                                                    }
+                                                                },
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: { fontSize: 22, color: '#94a3b8', marginTop: 12, fontWeight: 600 },
+                                                                        children: 'OVERALL SCORE'
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { display: 'flex', flexDirection: 'column', maxWidth: 580, alignItems: 'flex-end' },
+                                                            children: [
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: { fontSize: 44, fontWeight: 800, color: meta.accentColor, textAlign: 'right' },
+                                                                        children: meta.archetype.toUpperCase()
+                                                                    }
+                                                                },
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: { fontSize: 22, color: '#cbd5e1', textAlign: 'right', marginTop: 16, lineHeight: 1.4 },
+                                                                        children: meta.description
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        // Footer Section
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: {
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    width: '100%',
+                                                    borderTop: '2px solid #334155',
+                                                    paddingTop: 24
+                                                },
+                                                children: [
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { fontSize: 20, color: '#94a3b8', fontWeight: 600 },
+                                                            children: 'Logic | Pattern | Spatial | Sequence'
+                                                        }
+                                                    },
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { fontSize: 24, fontWeight: 800, color: '#3b82f6' },
+                                                            children: 'Can you beat this score in TLQ?'
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         ]
