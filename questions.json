@@ -11,17 +11,89 @@
     "id": "seq-002",
     "category": "sequence",
     "difficulty": 2,
-    "prompt": "1, 4, 9, 16, ?",
-    "options": ["20", "24", "25", "30"],
-    "answer": "25"
+    "prompt": "1, 4, 9, 16, 25, ?",
+    "options": ["30", "32", "36", "49"],
+    "answer": "36"
+  },
+  {
+    "id": "seq-003",
+    "category": "sequence",
+    "difficulty": 3,
+    "prompt": "3, 5, 9, 17, 33, ?",
+    "options": ["65", "64", "50", "49"],
+    "answer": "65"
+  },
+  {
+    "id": "seq-004",
+    "category": "sequence",
+    "difficulty": 4,
+    "prompt": "2, 3, 5, 8, 13, 21, ?",
+    "options": ["31", "34", "35", "40"],
+    "answer": "34"
+  },
+  {
+    "id": "seq-005",
+    "category": "sequence",
+    "difficulty": 5,
+    "prompt": "7, 10, 16, 28, 52, ?",
+    "options": ["98", "100", "104", "88"],
+    "answer": "100"
+  },
+  {
+    "id": "seq-006",
+    "category": "sequence",
+    "difficulty": 3,
+    "prompt": "100, 96, 88, 72, ?",
+    "options": ["56", "40", "48", "60"],
+    "answer": "40"
   },
   {
     "id": "logic-001",
     "category": "logic",
-    "difficulty": 3,
+    "difficulty": 2,
     "prompt": "If some Zorks are Snarks, and all Snarks are Boojums, are all Zorks Boojums?",
     "options": ["Yes", "No", "Not enough information"],
     "answer": "No"
+  },
+  {
+    "id": "logic-002",
+    "category": "logic",
+    "difficulty": 3,
+    "prompt": "Five cars race. Red finished before Blue but after Green. Yellow finished after Blue. Black finished first. Who came third?",
+    "options": ["Red", "Green", "Blue", "Yellow"],
+    "answer": "Red"
+  },
+  {
+    "id": "logic-003",
+    "category": "logic",
+    "difficulty": 3,
+    "prompt": "If A > B and B > C, which of the following is guaranteed to be true?",
+    "options": ["C > A", "A + B > C + A", "A > C", "B = C"],
+    "answer": "A > C"
+  },
+  {
+    "id": "logic-004",
+    "category": "logic",
+    "difficulty": 4,
+    "prompt": "A clock shows 3:15. What is the angle between the hour and minute hands?",
+    "options": ["0 degrees", "7.5 degrees", "15 degrees", "30 degrees"],
+    "answer": "7.5 degrees"
+  },
+  {
+    "id": "logic-005",
+    "category": "logic",
+    "difficulty": 4,
+    "prompt": "You have three colored jars. One has candy, two are empty. Jar 1 says 'Candy is here'. Jar 2 says 'Candy is not here'. Jar 3 says 'Candy is not in Jar 1'. Only ONE statement is true. Where is the candy?",
+    "options": ["Jar 1", "Jar 2", "Jar 3", "Impossible to determine"],
+    "answer": "Jar 2"
+  },
+  {
+    "id": "logic-006",
+    "category": "logic",
+    "difficulty": 5,
+    "prompt": "In a town, 60% read paper X, 40% read paper Y, and 20% read both. What percentage reads neither?",
+    "options": ["10%", "20%", "30%", "0%"],
+    "answer": "20%"
   },
   {
     "id": "pattern-001",
@@ -32,11 +104,103 @@
     "answer": "Go"
   },
   {
+    "id": "pattern-002",
+    "category": "pattern",
+    "difficulty": 2,
+    "prompt": "Which word is the odd one out: Piano, Guitar, Violin, Flute, Cello?",
+    "options": ["Piano", "Guitar", "Flute", "Cello"],
+    "answer": "Flute"
+  },
+  {
+    "id": "pattern-003",
+    "category": "pattern",
+    "difficulty": 3,
+    "visual_svg": "<svg viewBox='0 0 240 80' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='60' height='60' fill='#1e293b' stroke='#3b82f6' stroke-width='2' rx='4'/><circle cx='40' cy='40' r='15' fill='#3b82f6'/><rect x='90' y='10' width='60' height='60' fill='#1e293b' stroke='#a855f7' stroke-width='2' rx='4'/><polygon points='120,22 138,55 102,55' fill='#a855f7'/><rect x='170' y='10' width='60' height='60' fill='#1e293b' stroke='#10b981' stroke-width='2' rx='4'/><text x='200' y='48' font-size='28' font-weight='bold' fill='#10b981' text-anchor='middle'>?</text></svg>",
+    "prompt": "In the sequence of geometric shapes inside frames, Circle has 1 continuous edge, Triangle has 3 sides. What should replace the question mark?",
+    "options": ["A line (1 side)", "A Pentagon (5 sides)", "A Point (0 sides)", "Two circles"],
+    "answer": "A Pentagon (5 sides)"
+  },
+  {
+    "id": "pattern-004",
+    "category": "pattern",
+    "difficulty": 4,
+    "visual_svg": "<svg viewBox='0 0 180 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='50' height='50' fill='#334155' rx='6'/><circle cx='35' cy='35' r='12' fill='#f59e0b'/><rect x='65' y='10' width='50' height='50' fill='#334155' rx='6'/><circle cx='75' cy='35' r='6' fill='#3b82f6'/><circle cx='95' cy='35' r='6' fill='#3b82f6'/><rect x='120' y='10' width='50' height='50' fill='#334155' rx='6'/><circle cx='135' cy='25' r='5' fill='#10b981'/><circle cx='155' cy='25' r='5' fill='#10b981'/><circle cx='145' cy='45' r='5' fill='#10b981'/><rect x='10' y='65' width='50' height='50' fill='#334155' rx='6'/><text x='35' y='98' font-size='20' fill='#fff' text-anchor='middle'>A</text><rect x='65' y='65' width='50' height='50' fill='#334155' rx='6'/><text x='90' y='98' font-size='20' fill='#fff' text-anchor='middle'>B</text><rect x='120' y='65' width='50' height='50' fill='#334155' rx='6'/><text x='145' y='98' font-size='24' font-weight='bold' fill='#ef4444' text-anchor='middle'>?</text></svg>",
+    "prompt": "Top row: 1 yellow dot, 2 blue dots, 3 green dots. Following this progressive rule in a 3x3 cognitive grid, how many items belong in the position marked by '?'",
+    "options": ["3 items", "6 items", "4 items", "5 items"],
+    "answer": "6 items"
+  },
+  {
+    "id": "pattern-005",
+    "category": "pattern",
+    "difficulty": 4,
+    "prompt": "Find the missing letter in this logical series: B, D, G, K, ?",
+    "options": ["N", "O", "P", "Q"],
+    "answer": "P"
+  },
+  {
+    "id": "pattern-006",
+    "category": "pattern",
+    "difficulty": 5,
+    "prompt": "Which code completes the cipher? CAR is to 3118, as DOG is to 4157, as EAR is to...",
+    "options": ["5118", "5119", "6118", "5218"],
+    "answer": "5118"
+  },
+  {
     "id": "spatial-001",
     "category": "spatial",
-    "difficulty": 4,
+    "difficulty": 2,
     "prompt": "A square paper is folded in half twice (into a smaller square) and a hole is punched through the center. How many holes are there when unfolded?",
     "options": ["1", "2", "3", "4"],
     "answer": "4"
+  },
+  {
+    "id": "spatial-002",
+    "category": "spatial",
+    "difficulty": 3,
+    "visual_svg": "<svg viewBox='0 0 260 80' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><circle cx='40' cy='40' r='28' fill='#1e293b' stroke='#475569' stroke-width='3'/><path d='M 40 40 L 40 12 L 68 40 Z' fill='#3b82f6'/><circle cx='130' cy='40' r='28' fill='#1e293b' stroke='#475569' stroke-width='3'/><path d='M 130 40 L 158 40 L 130 68 Z' fill='#3b82f6'/><circle cx='220' cy='40' r='28' fill='#1e293b' stroke='#475569' stroke-width='3'/><text x='220' y='48' font-size='26' font-weight='bold' fill='#f59e0b' text-anchor='middle'>?</text></svg>",
+    "prompt": "The shaded quadrant inside the circle rotates clockwise by 90 degrees in each successive frame. Where will the shaded section be in the third circle?",
+    "options": ["Bottom-Left quadrant", "Bottom-Right quadrant", "Top-Left quadrant", "Top-Right quadrant"],
+    "answer": "Bottom-Left quadrant"
+  },
+  {
+    "id": "spatial-003",
+    "category": "spatial",
+    "difficulty": 4,
+    "prompt": "If you look at a 3D solid sphere directly from above, below, and any side, what 2D shape do you always see?",
+    "options": ["Oval", "Circle", "Sphere", "Cylinder"],
+    "answer": "Circle"
+  },
+  {
+    "id": "spatial-004",
+    "category": "spatial",
+    "difficulty": 4,
+    "visual_svg": "<svg viewBox='0 0 200 100' width='100%' height='130' xmlns='http://www.w3.org/2000/svg'><g transform='translate(20,20)'><rect x='0' y='0' width='30' height='30' fill='#3b82f6' stroke='#0f172a'/><rect x='15' y='15' width='30' height='30' fill='#a855f7' stroke='#0f172a'/><rect x='30' y='30' width='30' height='30' fill='#10b981' stroke='#0f172a'/></g><text x='130' y='55' font-size='15' fill='#94a3b8' text-anchor='middle'>Overlapping Layers</text></svg>",
+    "prompt": "In the layered squares above, Blue is at the back and Green is at the front. If you reverse the stacking sequence so the back becomes front, which colored square will be partially covered by both of the other two squares?",
+    "options": ["Blue square", "Purple square", "Green square", "None of them"],
+    "answer": "Purple square"
+  },
+  {
+    "id": "spatial-005",
+    "category": "spatial",
+    "difficulty": 5,
+    "prompt": "A cube has faces numbered 1 through 6. If 1 is opposite 6, 2 is opposite 5, and 3 is opposite 4, what sum is obtained by adding the numbers opposite 2, 3, and 6?",
+    "options": ["10", "11", "12", "15"],
+    "answer": "10"
+  },
+  {
+    "id": "spatial-006",
+    "category": "spatial",
+    "difficulty": 3,
+    "prompt": "Imagine turning a key 90 degrees clockwise, then 180 degrees counter-clockwise, then 270 degrees clockwise. How is the key oriented compared to its starting position?",
+    "options": ["180 degrees opposite", "90 degrees clockwise", "Exactly where it started", "90 degrees counter-clockwise"],
+    "answer": "180 degrees opposite"
+  },
+  {
+    "id": "seq-007",
+    "category": "sequence",
+    "difficulty": 4,
+    "prompt": "1, 2, 6, 24, 120, ?",
+    "options": ["500", "720", "640", "840"],
+    "answer": "720"
   }
 ]
