@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!statsGrid) return;
         
         const color = accentColor || '#3b82f6';
-        const logicVal = categories.logic || 85;
-        const patternVal = categories.pattern || 85;
-        const spatialVal = categories.spatial || 85;
-        const sequenceVal = categories.sequence || 85;
+        const logicVal = Number(categories.logic || 78);
+        const patternVal = Number(categories.pattern || 78);
+        const spatialVal = Number(categories.spatial || 78);
+        const sequenceVal = Number(categories.sequence || 78);
 
-        const getRatio = (val) => Math.max(0.25, Math.min(1.0, 0.25 + ((val - 85) / 63) * 0.75));
+        const getRatio = (val) => Math.max(0.2, Math.min(1.0, 0.2 + ((val - 78) / 72) * 0.8));
 
         const rLogic = getRatio(logicVal);
         const rPattern = getRatio(patternVal);
@@ -167,10 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <circle id="circle-spatial" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     <circle id="circle-sequence" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     
-                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (85)</text>
-                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (85)</text>
-                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (85)</text>
-                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (85)</text>
+                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (78)</text>
+                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (78)</text>
+                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (78)</text>
+                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (78)</text>
                 </svg>
             </div>
         `;
@@ -206,10 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cSpatial) cSpatial.setAttribute('cy', curSpatialY);
             if (cSequence) cSequence.setAttribute('cx', curSequenceX);
 
-            if (lLogic) lLogic.textContent = `Logic (${Math.round(85 + (logicVal - 85) * ease)})`;
-            if (lPattern) lPattern.textContent = `Pattern (${Math.round(85 + (patternVal - 85) * ease)})`;
-            if (lSpatial) lSpatial.textContent = `Spatial (${Math.round(85 + (spatialVal - 85) * ease)})`;
-            if (lSequence) lSequence.textContent = `Sequence (${Math.round(85 + (sequenceVal - 85) * ease)})`;
+            if (lLogic) lLogic.textContent = `Logic (${Math.round(78 + (logicVal - 78) * ease)})`;
+            if (lPattern) lPattern.textContent = `Pattern (${Math.round(78 + (patternVal - 78) * ease)})`;
+            if (lSpatial) lSpatial.textContent = `Spatial (${Math.round(78 + (spatialVal - 78) * ease)})`;
+            if (lSequence) lSequence.textContent = `Sequence (${Math.round(78 + (sequenceVal - 78) * ease)})`;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
@@ -248,6 +248,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) throw new Error('Failed to submit diagnostic payload');
             
             const resultData = await res.json();
+            
+            const toIQ = (val, avgVal) => {
+                const num = Number(val || 0);
+                if (num >= 75) return Math.min(152, Math.max(78, Math.round(num)));
+                return Math.min(152, Math.max(78, Math.round(78 + (num / avgVal) * 22)));
+            };
+
+            resultData.score = toIQ(resultData.score, 28);
+            if (resultData.categories) {
+                resultData.categories.logic = toIQ(resultData.categories.logic, 7);
+                resultData.categories.pattern = toIQ(resultData.categories.pattern, 7);
+                resultData.categories.spatial = toIQ(resultData.categories.spatial, 7);
+                resultData.categories.sequence = toIQ(resultData.categories.sequence, 7);
+            }
             
             const badge = document.getElementById('archetype-badge');
             if (badge) {
@@ -392,10 +406,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            const fallbackIq = Math.min(148, Math.max(85, Math.round(85 + (score / 60) * 63)));
-            document.getElementById('score-display').innerText = `Cognitive IQ: ${fallbackIq}`;
+            const toIQ = (val, avgVal) => {
+                const num = Number(val || 0);
+                if (num >= 75) return Math.min(152, Math.max(78, Math.round(num)));
+                return Math.min(152, Math.max(78, Math.round(78 + (num / avgVal) * 22)));
+            };
+            const fallbackIq = toIQ(score, 28);
+            const fallbackCats = {
+                logic: toIQ(categoryScores.logic, 7),
+                pattern: toIQ(categoryScores.pattern, 7),
+                spatial: toIQ(categoryScores.spatial, 7),
+                sequence: toIQ(categoryScores.sequence, 7)
+            };
+            document.getElementById('score-display').innerText = `Cognitive IQ: ${fallbackIq} (Average Base: 100)`;
             document.getElementById('type-description').innerText = 'Completed analytical session.';
-            renderCategoryStats(categoryScores, '#3b82f6');
+            renderCategoryStats(fallbackCats, '#3b82f6');
         }
     }
 

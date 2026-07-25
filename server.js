@@ -57,24 +57,28 @@ app.post('/api/score', (req, res) => {
     const sessionId = req.body.session_id || uuidv4();
     const resultId = uuidv4();
     
-    const score = Math.min(148, Math.max(85, Math.round(85 + (rawScore / 60) * 63)));
+    const toIQ = (val, avgVal) => {
+        const num = Number(val || 0);
+        if (num >= 75) return Math.min(152, Math.max(78, Math.round(num)));
+        return Math.min(152, Math.max(78, Math.round(78 + (num / avgVal) * 22)));
+    };
+    const score = toIQ(rawScore, 28);
     
     let percentile = 50;
-    if (score >= 140) percentile = 99;
-    else if (score >= 132) percentile = 98;
-    else if (score >= 125) percentile = 94;
-    else if (score >= 118) percentile = 88;
-    else if (score >= 110) percentile = 76;
-    else if (score >= 100) percentile = 60;
-    else percentile = 42;
-    
-    const mapCategoryIndex = (val) => Math.min(148, Math.max(85, Math.round(85 + (Number(val || 0) / 15) * 63)));
+    if (score >= 135) percentile = 99;
+    else if (score >= 130) percentile = 98;
+    else if (score >= 120) percentile = 92;
+    else if (score >= 115) percentile = 84;
+    else if (score >= 105) percentile = 65;
+    else if (score >= 100) percentile = 50;
+    else if (score >= 90) percentile = 35;
+    else percentile = 20;
     
     const categories = {
-        sequence: mapCategoryIndex(category_breakdown.sequence),
-        logic: mapCategoryIndex(category_breakdown.logic),
-        pattern: mapCategoryIndex(category_breakdown.pattern),
-        spatial: mapCategoryIndex(category_breakdown.spatial)
+        sequence: toIQ(category_breakdown.sequence, 7),
+        logic: toIQ(category_breakdown.logic, 7),
+        pattern: toIQ(category_breakdown.pattern, 7),
+        spatial: toIQ(category_breakdown.spatial, 7)
     };
     
     let typeLabel = "Lateral Alchemist";
@@ -84,7 +88,7 @@ app.post('/api/score', (req, res) => {
     const maxCat = Object.entries(categories).sort((a, b) => b[1] - a[1])[0] || ['logic', 0];
     const totalCatScore = Object.values(categories).reduce((a, b) => a + b, 0);
     
-    if (time_taken <= 75 && score >= 20) {
+    if (time_taken <= 75 && score >= 100) {
         typeLabel = "Neural Speedster";
         accentColor = "#ec4899";
         description = "Rapid instinct and high-velocity pattern processing under time pressure";
