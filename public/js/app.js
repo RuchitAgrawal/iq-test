@@ -133,13 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!statsGrid) return;
         
         const color = accentColor || '#3b82f6';
-        const logicVal = categories.logic || 0;
-        const patternVal = categories.pattern || 0;
-        const spatialVal = categories.spatial || 0;
-        const sequenceVal = categories.sequence || 0;
+        const logicVal = categories.logic || 85;
+        const patternVal = categories.pattern || 85;
+        const spatialVal = categories.spatial || 85;
+        const sequenceVal = categories.sequence || 85;
 
-        const maxVal = Math.max(12, logicVal, patternVal, spatialVal, sequenceVal);
-        const getRatio = (val) => Math.max(0.15, Math.min(1.0, val / maxVal));
+        const getRatio = (val) => Math.max(0.25, Math.min(1.0, 0.25 + ((val - 85) / 63) * 0.75));
 
         const rLogic = getRatio(logicVal);
         const rPattern = getRatio(patternVal);
@@ -168,10 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <circle id="circle-spatial" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     <circle id="circle-sequence" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     
-                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (0)</text>
-                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (0)</text>
-                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (0)</text>
-                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (0)</text>
+                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (85)</text>
+                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (85)</text>
+                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (85)</text>
+                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (85)</text>
                 </svg>
             </div>
         `;
@@ -207,10 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cSpatial) cSpatial.setAttribute('cy', curSpatialY);
             if (cSequence) cSequence.setAttribute('cx', curSequenceX);
 
-            if (lLogic) lLogic.textContent = `Logic (${Math.round(logicVal * ease)})`;
-            if (lPattern) lPattern.textContent = `Pattern (${Math.round(patternVal * ease)})`;
-            if (lSpatial) lSpatial.textContent = `Spatial (${Math.round(spatialVal * ease)})`;
-            if (lSequence) lSequence.textContent = `Sequence (${Math.round(sequenceVal * ease)})`;
+            if (lLogic) lLogic.textContent = `Logic (${Math.round(85 + (logicVal - 85) * ease)})`;
+            if (lPattern) lPattern.textContent = `Pattern (${Math.round(85 + (patternVal - 85) * ease)})`;
+            if (lSpatial) lSpatial.textContent = `Spatial (${Math.round(85 + (spatialVal - 85) * ease)})`;
+            if (lSequence) lSequence.textContent = `Sequence (${Math.round(85 + (sequenceVal - 85) * ease)})`;
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
@@ -259,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            document.getElementById('score-display').innerText = `Cognitive Score: ${resultData.score} (Top ${100 - resultData.percentile}% Rank)`;
+            document.getElementById('score-display').innerText = `Cognitive IQ: ${resultData.score} (Top ${100 - resultData.percentile}% Rank)`;
             document.getElementById('type-description').innerText = resultData.description || 'Verified cognitive agility across multiple analytical domains.';
             
             renderCategoryStats(resultData.categories || categoryScores, resultData.accentColor);
@@ -284,8 +283,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     shareBtn.disabled = true;
 
                     const testUrl = window.location.origin || 'http://localhost:3000';
-                    const statsSummary = `Logic: ${resultData.categories?.logic || 0} | Pattern: ${resultData.categories?.pattern || 0} | Spatial: ${resultData.categories?.spatial || 0} | Sequence: ${resultData.categories?.sequence || 0}`;
-                    const shareText = `🧠 TLQ COGNITIVE MATRIX\n👑 Rank: Top ${100 - resultData.percentile}% [${resultData.typeLabel}]\n⚡ Velocity: ${timeFormatted} | Score: ${resultData.score}\n🎯 Stats: ${statsSummary}\n\nCan you surpass my analytical agility? Play right here 👉 ${testUrl}`;
+                    const c = resultData.categories || {};
+                    const statsSummary = `Logic: ${c.logic || 85} | Pattern: ${c.pattern || 85} | Spatial: ${c.spatial || 85} | Sequence: ${c.sequence || 85}`;
+                    const shareText = `🧠 TLQ COGNITIVE MATRIX\n👑 Rank: Top ${100 - resultData.percentile}% [${resultData.typeLabel}]\n⚡ Velocity: ${timeFormatted} | C-IQ Index: ${resultData.score}\n🎯 Sub-Indices: ${statsSummary}\n\nCan you surpass my analytical agility? Play right here 👉 ${testUrl}`;
                     
                     let imageBlob = null;
                     let imageFile = null;
@@ -392,7 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('score-display').innerText = `Cognitive Score: ${score}`;
+            const fallbackIq = Math.min(148, Math.max(85, Math.round(85 + (score / 60) * 63)));
+            document.getElementById('score-display').innerText = `Cognitive IQ: ${fallbackIq}`;
             document.getElementById('type-description').innerText = 'Completed analytical session.';
             renderCategoryStats(categoryScores, '#3b82f6');
         }

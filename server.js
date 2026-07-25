@@ -51,21 +51,30 @@ app.post('/bot' + (process.env.TELEGRAM_BOT_TOKEN || 'DUMMY_TOKEN'), (req, res) 
 });
 
 app.post('/api/score', (req, res) => {
-    const { score = 0, category_breakdown = {}, time_taken = 120, group_id, user_id } = req.body;
+    const rawScore = Number(req.body.score || 0);
+    const time_taken = Number(req.body.time_taken || 120);
+    const { category_breakdown = {}, group_id, user_id } = req.body;
     const sessionId = req.body.session_id || uuidv4();
     const resultId = uuidv4();
     
+    const score = Math.min(148, Math.max(85, Math.round(85 + (rawScore / 60) * 63)));
+    
     let percentile = 50;
-    if (score >= 45) percentile = 98;
-    else if (score >= 35) percentile = 92;
-    else if (score >= 25) percentile = 84;
-    else if (score >= 15) percentile = 68;
+    if (score >= 140) percentile = 99;
+    else if (score >= 132) percentile = 98;
+    else if (score >= 125) percentile = 94;
+    else if (score >= 118) percentile = 88;
+    else if (score >= 110) percentile = 76;
+    else if (score >= 100) percentile = 60;
+    else percentile = 42;
+    
+    const mapCategoryIndex = (val) => Math.min(148, Math.max(85, Math.round(85 + (Number(val || 0) / 15) * 63)));
     
     const categories = {
-        sequence: category_breakdown.sequence || 0,
-        logic: category_breakdown.logic || 0,
-        pattern: category_breakdown.pattern || 0,
-        spatial: category_breakdown.spatial || 0
+        sequence: mapCategoryIndex(category_breakdown.sequence),
+        logic: mapCategoryIndex(category_breakdown.logic),
+        pattern: mapCategoryIndex(category_breakdown.pattern),
+        spatial: mapCategoryIndex(category_breakdown.spatial)
     };
     
     let typeLabel = "Lateral Alchemist";
@@ -228,7 +237,7 @@ app.get('/api/image/:id', async (req, res) => {
                                                                     type: 'div',
                                                                     props: {
                                                                         style: { fontSize: 22, color: '#94a3b8', marginTop: 12, fontWeight: 600 },
-                                                                        children: 'OVERALL SCORE'
+                                                                        children: 'COGNITIVE IQ INDEX'
                                                                     }
                                                                 }
                                                             ]
@@ -276,8 +285,8 @@ app.get('/api/image/:id', async (req, res) => {
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { fontSize: 20, color: '#94a3b8', fontWeight: 600 },
-                                                            children: 'Logic | Pattern | Spatial | Sequence'
+                                                            style: { fontSize: 19, color: '#94a3b8', fontWeight: 600 },
+                                                            children: `Logic (${meta.categories?.logic || 85}) | Pattern (${meta.categories?.pattern || 85}) | Spatial (${meta.categories?.spatial || 85}) | Sequence (${meta.categories?.sequence || 85})`
                                                         }
                                                     },
                                                     {
