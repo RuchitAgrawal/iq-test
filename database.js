@@ -38,6 +38,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 group_id TEXT,
                 user_id TEXT,
                 best_score REAL,
+                archetype TEXT,
                 last_played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (group_id, user_id)
             )`);
