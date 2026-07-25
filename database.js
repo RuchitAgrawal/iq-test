@@ -16,7 +16,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 difficulty INTEGER,
                 prompt TEXT,
                 options TEXT,
-                answer TEXT
+                answer TEXT,
+                visual_svg TEXT
             )`);
             
             db.run(`CREATE TABLE IF NOT EXISTS results (

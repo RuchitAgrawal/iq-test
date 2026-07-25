@@ -20,9 +20,8 @@ const db = require('./database');
 
 // API: Get randomized balanced question set
 app.get('/api/questions', (req, res) => {
-    // In a real scenario, this would pull a balanced mix.
-    // For MVP, we pull 15 random questions sorted by difficulty ascending.
-    db.all("SELECT * FROM questions ORDER BY RANDOM() LIMIT 15", [], (err, rows) => {
+    // Select 20 random questions sorted by difficulty ascending after fetching
+    db.all("SELECT * FROM questions ORDER BY RANDOM() LIMIT 20", [], (err, rows) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
