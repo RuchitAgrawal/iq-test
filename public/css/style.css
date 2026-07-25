@@ -381,24 +381,47 @@ button {
     margin-bottom: 22px;
 }
 
+.tlq-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .tlq-action-btn {
     display: inline-block;
     width: 100%;
     padding: 16px 24px;
-    background: #ffffff;
-    color: #0f172a;
     font-weight: 800;
     font-size: 16px;
     text-decoration: none;
     border-radius: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tlq-action-btn:hover {
+.primary-tlq {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.primary-tlq:hover {
     background: #38bdf8;
     color: #0f172a;
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+}
+
+.discord-tlq {
+    background: #5865f2;
+    color: #ffffff;
+    box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+}
+
+.discord-tlq:hover {
+    background: #4752c4;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(88, 101, 242, 0.5);
 }
 
 @keyframes slideUp {
