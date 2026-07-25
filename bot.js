@@ -29,13 +29,15 @@ bot.onText(/\/leaderboard/, (msg) => {
     
     db.all("SELECT * FROM telegram_scores WHERE group_id = ? ORDER BY best_score DESC LIMIT 10", [chatId], (err, rows) => {
         if (err || rows.length === 0) {
-            return bot.sendMessage(chatId, "No scores recorded in this group yet! Play /iqtest to start.");
+            return bot.sendMessage(chatId, "No scores recorded in this group yet! Play /iqtest to calibrate your rank.");
         }
         
-        let lbText = "🏆 **IQ Test Leaderboard** 🏆\n\n";
+        let lbText = "🏆 **TLQ Group Cognitive Leaderboard** 🏆\n\n";
         rows.forEach((row, index) => {
-            lbText += `${index + 1}. User ${row.user_id.substring(0,4)}... - Score: ${row.best_score}\n`;
+            const title = row.archetype || "Initiated Thinker";
+            lbText += `${index + 1}. User ${String(row.user_id).substring(0,6)} [${title}]\n    ⚡ Score: **${row.best_score}**\n\n`;
         });
+        lbText += `Ready to climb the ranks? Type /iqtest to challenge!`;
         
         bot.sendMessage(chatId, lbText, { parse_mode: 'Markdown' });
     });
@@ -46,31 +48,37 @@ bot.onText(/\/rank/, (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id;
     
-    db.get("SELECT best_score FROM telegram_scores WHERE group_id = ? AND user_id = ?", [chatId, userId], (err, row) => {
+    db.get("SELECT * FROM telegram_scores WHERE group_id = ? AND user_id = ?", [chatId, userId], (err, row) => {
         if (err || !row) {
-            return bot.sendMessage(chatId, "You haven't played in this group yet!");
+            return bot.sendMessage(chatId, "You haven't completed a diagnostic session in this group yet! Play /iqtest to calibrate your rank.");
         }
-        bot.sendMessage(chatId, `Your best score in this group is: **${row.best_score}**`, { parse_mode: 'Markdown' });
+        const title = row.archetype || "Initiated Thinker";
+        bot.sendMessage(chatId, `🧠 **Your Cognitive Profile in this Group:**\n\n🏅 **Title:** ${title}\n⚡ **Best Score:** ${row.best_score}\n\nPlay /iqtest again to surpass your record!`, { parse_mode: 'Markdown' });
     });
 });
 
 // Function to post result image back to group
 const postResultToGroup = (groupId, userId, score, imageUrl, typeLabel) => {
-    if (token === 'DUMMY_TOKEN') return; // Skip if no real token
+    if (token === 'DUMMY_TOKEN') return;
     
-    // Update score in DB
     const stmt = db.prepare(`
-        INSERT INTO telegram_scores (group_id, user_id, best_score) 
-        VALUES (?, ?, ?) 
+        INSERT INTO telegram_scores (group_id, user_id, best_score, archetype) 
+        VALUES (?, ?, ?, ?) 
         ON CONFLICT(group_id, user_id) 
-        DO UPDATE SET best_score = excluded.best_score WHERE excluded.best_score > best_score
+        DO UPDATE SET 
+            best_score = CASE WHEN excluded.best_score > best_score THEN excluded.best_score ELSE best_score END,
+            archetype = CASE WHEN excluded.best_score > best_score THEN excluded.archetype ELSE archetype END
     `);
-    stmt.run(groupId, userId, score);
+    stmt.run(groupId, userId, score, typeLabel);
     stmt.finalize();
     
-    // Send photo to group
+    const caption = `👑 **User ${userId} achieved Top Rank as a ${typeLabel}!**\n\n` +
+                    `⚡ **Cognitive Score:** ${score}\n\n` +
+                    `Think you have higher mental agility or faster processing speed?\n` +
+                    `Type /iqtest to launch the diagnostic and challenge their record in TLQ!`;
+
     bot.sendPhoto(groupId, imageUrl, {
-        caption: `User ${userId} just scored ${score}! They are a **${typeLabel}**.\n\nPlay /iqtest to beat them!`,
+        caption: caption,
         parse_mode: 'Markdown'
     }).catch(console.error);
 };
