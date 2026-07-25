@@ -22,12 +22,13 @@ fs.readFile(questionsFile, 'utf8', (err, data) => {
                 prompt TEXT,
                 options TEXT,
                 answer TEXT,
-                visual_svg TEXT
+                visual_svg TEXT,
+                options_svg TEXT
             )`);
-            const stmt = db.prepare("INSERT INTO questions (id, category, difficulty, prompt, options, answer, visual_svg) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            const stmt = db.prepare("INSERT INTO questions (id, category, difficulty, prompt, options, answer, visual_svg, options_svg) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             
             questions.forEach(q => {
-                stmt.run(q.id, q.category, q.difficulty, q.prompt, JSON.stringify(q.options), q.answer, q.visual_svg || null);
+                stmt.run(q.id, q.category, q.difficulty, q.prompt, JSON.stringify(q.options), q.answer, q.visual_svg || null, q.options_svg ? JSON.stringify(q.options_svg) : null);
             });
             
             stmt.finalize();

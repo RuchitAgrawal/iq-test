@@ -79,11 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let optionsHtml = '';
+        const hasSvgOptions = Array.isArray(q.options_svg) && q.options_svg.length === (q.options ? q.options.length : 0);
         if (q.options && q.options.length > 0) {
-            optionsHtml = q.options.map(opt => `
-                <button class="option-btn" data-value="${opt}">
-                    <span class="option-indicator"></span>
-                    <span>${opt}</span>
+            optionsHtml = q.options.map((opt, idx) => `
+                <button class="option-btn ${hasSvgOptions ? 'visual-option-btn' : ''}" data-value="${opt}">
+                    ${hasSvgOptions ? `<div class="option-svg-icon">${q.options_svg[idx]}</div>` : '<span class="option-indicator"></span>'}
+                    <span class="option-text">${opt}</span>
                 </button>
             `).join('');
         }
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2>${q.prompt}</h2>
                 ${visualHtml}
             </div>
-            <div class="options-grid">
+            <div class="options-grid ${hasSvgOptions ? 'visual-options-grid' : ''}">
                 ${optionsHtml}
             </div>
         `;

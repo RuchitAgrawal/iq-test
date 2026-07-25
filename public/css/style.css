@@ -263,6 +263,49 @@ button {
     transform: scale(1);
 }
 
+.visual-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.visual-option-btn {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 16px;
+    text-align: center;
+    gap: 12px;
+    background: rgba(30, 41, 59, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+}
+
+.visual-option-btn:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.18);
+    box-shadow: 0 14px 28px rgba(59, 130, 246, 0.25);
+}
+
+.option-svg-icon {
+    width: 100%;
+    max-width: 80px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-svg-icon svg {
+    max-height: 100%;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.4));
+    transition: transform 0.25s ease;
+}
+
+.visual-option-btn:hover .option-svg-icon svg {
+    transform: scale(1.12);
+}
+
 /* Result Screen */
 .result-header {
     background: rgba(16, 185, 129, 0.15);

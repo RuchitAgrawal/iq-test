@@ -33,7 +33,8 @@ app.get('/api/questions', (req, res) => {
         // Parse the options JSON string back to an array
         const formattedRows = rows.map(r => ({
             ...r,
-            options: JSON.parse(r.options)
+            options: JSON.parse(r.options),
+            options_svg: r.options_svg ? JSON.parse(r.options_svg) : null
         }));
         
         res.json(formattedRows);
