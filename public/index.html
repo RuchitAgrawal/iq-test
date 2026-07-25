@@ -63,6 +63,28 @@
         </div>
     </div>
     
+    <div id="share-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Messaging App</h3>
+                <button id="close-modal-btn" class="close-btn">✕</button>
+            </div>
+            <p class="modal-subtitle">Choose your messaging app to pick a group or friend and post your challenge link directly:</p>
+            
+            <div class="card-preview-wrapper">
+                <img id="modal-card-preview" src="" alt="Cognitive Card Preview" class="card-preview" />
+            </div>
+            <p id="modal-clipboard-status" class="clipboard-notice">✅ Card image and challenge link copied to your clipboard! Ready to paste.</p>
+
+            <div class="app-selector-grid">
+                <button id="app-whatsapp-btn" class="app-btn whatsapp-btn">📱 WhatsApp (Select Group or Chat)</button>
+                <button id="app-telegram-btn" class="app-btn telegram-btn">✈️ Telegram (Select Group or Chat)</button>
+                <button id="app-twitter-btn" class="app-btn twitter-btn">🐦 X / Twitter Post</button>
+                <button id="app-download-btn" class="app-btn download-btn">💾 Save Image to Device</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/app.js"></script>
 </body>
 </html>

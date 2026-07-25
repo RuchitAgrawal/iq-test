@@ -214,18 +214,99 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCategoryStats(resultData.categories || categoryScores, resultData.accentColor);
             
             const shareBtn = document.getElementById('share-btn');
+            const shareModal = document.getElementById('share-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalCardPreview = document.getElementById('modal-card-preview');
+            const whatsappBtn = document.getElementById('app-whatsapp-btn');
+            const telegramBtn = document.getElementById('app-telegram-btn');
+            const twitterBtn = document.getElementById('app-twitter-btn');
+            const downloadBtn = document.getElementById('app-download-btn');
+
+            if (closeModalBtn && shareModal) {
+                closeModalBtn.onclick = () => shareModal.classList.add('hidden');
+            }
+
             if (shareBtn) {
-                shareBtn.onclick = () => {
-                    window.open(resultData.imageUrl, '_blank');
+                shareBtn.innerText = '⚡ Share Matrix & Select App';
+                shareBtn.onclick = async () => {
+                    shareBtn.innerText = 'Preparing Challenge Card...';
+                    shareBtn.disabled = true;
+
+                    const testUrl = window.location.origin || 'http://localhost:3000';
+                    const shareText = `🧠 I just tested as a Top ${100 - resultData.percentile}% [${resultData.typeLabel}] on the TLQ Cognitive Matrix!\n⚡ Velocity: ${timeFormatted} | Score: ${resultData.score}\n🟩 ⏩ 🟨 ⏩ 🟩\nCan you surpass my analytical profile? Play right here 👉 ${testUrl}`;
                     
-                    const shareText = `🧠 I just calibrated as a Top ${100 - resultData.percentile}% [${resultData.typeLabel}] on the TLQ Cognitive Matrix!\n⚡ Velocity: ${timeFormatted} | Score: ${resultData.score}\n🟩 ⏩ 🟨 ⏩ 🟩\nCan you surpass my analytical breakdown? Test your brain right here 👉 ${window.location.origin}`;
-                    
-                    if (navigator.clipboard) {
+                    let imageBlob = null;
+                    let imageFile = null;
+                    try {
+                        const imgRes = await fetch(resultData.imageUrl);
+                        imageBlob = await imgRes.blob();
+                        imageFile = new File([imageBlob], 'tlq-cognitive-card.png', { type: imageBlob.type || 'image/png' });
+                    } catch (fetchErr) {
+                        console.error('Failed to fetch card image blob:', fetchErr);
+                    }
+
+                    shareBtn.innerText = '⚡ Share Matrix & Select App';
+                    shareBtn.disabled = false;
+
+                    if (navigator.canShare && imageFile && navigator.canShare({ files: [imageFile] })) {
+                        try {
+                            await navigator.share({
+                                title: `TLQ Cognitive Profile: ${resultData.typeLabel}`,
+                                text: shareText,
+                                url: testUrl,
+                                files: [imageFile]
+                            });
+                            return;
+                        } catch (shareErr) {
+                            console.log('System app selector dismissed or unavailable, launching custom picker.', shareErr);
+                        }
+                    }
+
+                    if (imageBlob && navigator.clipboard && navigator.clipboard.write) {
+                        try {
+                            const item = new ClipboardItem({ [imageBlob.type || 'image/png']: imageBlob });
+                            await navigator.clipboard.write([item]);
+                        } catch (clipErr) {
+                            console.log('Clipboard image copy fallback:', clipErr);
+                            if (navigator.clipboard.writeText) {
+                                navigator.clipboard.writeText(shareText).catch(console.error);
+                            }
+                        }
+                    } else if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(shareText).catch(console.error);
-                        const toast = document.getElementById('share-toast');
-                        if (toast) {
-                            toast.classList.remove('hidden');
-                            setTimeout(() => toast.classList.add('hidden'), 3500);
+                    }
+
+                    if (shareModal) {
+                        if (modalCardPreview) modalCardPreview.src = resultData.imageUrl;
+                        shareModal.classList.remove('hidden');
+
+                        if (whatsappBtn) {
+                            whatsappBtn.onclick = () => {
+                                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+                            };
+                        }
+
+                        if (telegramBtn) {
+                            telegramBtn.onclick = () => {
+                                window.open(`https://t.me/share/url?url=${encodeURIComponent(testUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+                            };
+                        }
+
+                        if (twitterBtn) {
+                            twitterBtn.onclick = () => {
+                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                            };
+                        }
+
+                        if (downloadBtn) {
+                            downloadBtn.onclick = () => {
+                                const a = document.createElement('a');
+                                a.href = resultData.imageUrl;
+                                a.download = `TLQ-${resultData.typeLabel.replace(/\s+/g, '-')}-Card.png`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            };
                         }
                     }
                 };
