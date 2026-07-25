@@ -32,6 +32,57 @@ document.addEventListener('DOMContentLoaded', () => {
     let startTime = null;
     let timerInterval = null;
     let elapsedSeconds = 0;
+    let questionStartTime = Date.now();
+    let audioEnabled = true;
+
+    const audioToggleBtn = document.getElementById('audio-toggle-btn');
+    if (audioToggleBtn) {
+        audioToggleBtn.addEventListener('click', () => {
+            audioEnabled = !audioEnabled;
+            audioToggleBtn.innerText = audioEnabled ? '🔊 On' : '🔇 Muted';
+        });
+    }
+
+    function playTone(type) {
+        if (!audioEnabled || (typeof window.AudioContext === 'undefined' && typeof window.webkitAudioContext === 'undefined')) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            const now = ctx.currentTime;
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'combo') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.06);
+                osc.frequency.setValueAtTime(783.99, now + 0.12);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'finish') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.setValueAtTime(880, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+        } catch (e) {
+            console.log('Audio playback prevented by browser autopilot constraints');
+        }
+    }
 
     function showScreen(screenName) {
         Object.values(screens).forEach(screen => {
@@ -78,10 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderQuestion() {
         if (currentQuestionIndex >= questions.length) {
             stopTimer();
+            playTone('finish');
             finishQuiz();
             return;
         }
 
+        questionStartTime = Date.now();
         const q = questions[currentQuestionIndex];
         
         const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
@@ -124,11 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleAnswer(selectedValue, question) {
+        const timeSpent = (Date.now() - questionStartTime) / 1000;
         if (selectedValue === question.answer) {
             score += question.difficulty || 2;
             const cat = question.category || 'logic';
             if (!categoryScores[cat]) categoryScores[cat] = 0;
             categoryScores[cat] += question.difficulty || 2;
+
+            if (timeSpent <= 5.0) {
+                playTone('combo');
+                const comboToast = document.getElementById('combo-toast');
+                if (comboToast) {
+                    comboToast.classList.remove('hidden');
+                    setTimeout(() => { comboToast.classList.add('hidden'); }, 1800);
+                }
+            } else {
+                playTone('click');
+            }
+        } else {
+            playTone('click');
         }
         
         questionContainer.style.opacity = '0';
