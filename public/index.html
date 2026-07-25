@@ -10,6 +10,13 @@
 <body>
     <div id="app" class="container">
         <div id="welcome-screen" class="screen active">
+            <div id="challenger-banner" class="challenger-banner hidden">
+                <div class="challenger-icon">🥊</div>
+                <div class="challenger-text">
+                    <span class="challenger-title">HEAD-TO-HEAD CHALLENGE DETECTED</span>
+                    <p>A <strong id="challenger-type-lbl">Pattern Seer</strong> scored <strong id="challenger-score-lbl">128 C-IQ</strong>. Can you surpass their analytical speed?</p>
+                </div>
+            </div>
             <div class="hero-badge">TLQ COGNITIVE MATRIX</div>
             <h1>Cognitive Profile Diagnostic</h1>
             <p class="subtitle">20 rapid targeted challenges across deduction, sequence ciphers, pattern abstraction, and 3D spatial rotation. Get your complete mental archetype instantly.</p>
@@ -19,6 +26,12 @@
                 <span>🏆 Group Ranked</span>
             </div>
             <button id="start-btn" class="primary-btn">Launch Diagnostic</button>
+            <div class="live-ticker-container">
+                <div class="ticker-label"><span class="pulse-dot"></span> LIVE ACTIVITY</div>
+                <div class="ticker-track">
+                    <span id="ticker-content" class="ticker-item">⚡ Alex verified 134 C-IQ (Neural Speedster) • 🏆 David ranked Top 6% in Logic • 🔥 Maya entered Level 1 Enigma Trial on TLQ • ⚡ Sam verified 122 C-IQ (Lateral Alchemist) • 🧠 Chris claimed Discord rank</span>
+                </div>
+            </div>
         </div>
         
         <div id="quiz-screen" class="screen hidden">
@@ -51,13 +64,17 @@
                 <div id="share-toast" class="toast hidden">Copied competitive summary to clipboard!</div>
             </div>
             
-            <div class="tlq-vip-card">
-                <div class="vip-badge">THE LAST QUESTION ARENA</div>
-                <h3>Outsmart The Grandmasters</h3>
-                <p>Your profile reveals sharp logical intuition. Enter the official TLQ competitive arena to challenge friends, crack deception puzzles, and join strategies in Discord.</p>
+            <div class="tlq-vip-card enigma-gate">
+                <div class="vip-badge">✨ VIP REWARD UNLOCKED</div>
+                <h3>The Enigma Gate Level 1</h3>
+                <p id="enigma-desc">Your verified rating unlocks exclusive entry into The Last Question mystery arena. Only top tier analytical minds qualify for Level 1 deception trials.</p>
+                <div class="discord-verification-banner">
+                    <span class="discord-tag">👑 DISCORD RANK CLAIM</span>
+                    <p>Drop your generated Player Card image into the official TLQ Discord to claim your <strong id="vip-role-name">Lateral Alchemist</strong> custom badge!</p>
+                </div>
                 <div class="tlq-btn-group">
-                    <a href="https://thelastquestion.io/?utm_source=iq-test&utm_medium=sidegame&utm_campaign=iq-test" target="_blank" class="tlq-action-btn primary-tlq">Play The Last Question 👉</a>
-                    <a href="https://discord.gg/V3RGHePW7" target="_blank" class="tlq-action-btn discord-tlq">Join TLQ Discord 💬</a>
+                    <a href="https://thelastquestion.io/?utm_source=iq-test&utm_medium=sidegame&utm_campaign=iq-test" target="_blank" class="tlq-action-btn primary-tlq">Enter Enigma Trial 👉</a>
+                    <a href="https://discord.gg/V3RGHePW7" target="_blank" class="tlq-action-btn discord-tlq">Claim Discord Rank 💬</a>
                 </div>
             </div>
         </div>

@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const urlParamsInit = new URLSearchParams(window.location.search);
+    const challengerScore = urlParamsInit.get('challenger');
+    const challengerType = urlParamsInit.get('type') || urlParamsInit.get('archetype');
+    if (challengerScore) {
+        const challengerBanner = document.getElementById('challenger-banner');
+        const scoreLbl = document.getElementById('challenger-score-lbl');
+        const typeLbl = document.getElementById('challenger-type-lbl');
+        if (challengerBanner && scoreLbl) {
+            scoreLbl.innerText = `${challengerScore} C-IQ`;
+            if (typeLbl && challengerType) typeLbl.innerText = challengerType;
+            challengerBanner.classList.remove('hidden');
+        }
+    }
+
     const screens = {
         welcome: document.getElementById('welcome-screen'),
         quiz: document.getElementById('quiz-screen'),
@@ -276,6 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('score-display').innerText = `Cognitive IQ: ${resultData.score} (Top ${100 - resultData.percentile}% Rank)`;
             document.getElementById('type-description').innerText = resultData.description || 'Verified cognitive agility across multiple analytical domains.';
             
+            const vipRoleEl = document.getElementById('vip-role-name');
+            if (vipRoleEl && resultData.typeLabel) vipRoleEl.innerText = resultData.typeLabel;
+            
             renderCategoryStats(resultData.categories || categoryScores, resultData.accentColor);
             
             const shareBtn = document.getElementById('share-btn');
@@ -297,9 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     shareBtn.innerText = 'Preparing Challenge Card...';
                     shareBtn.disabled = true;
 
-                    const testUrl = window.location.origin || 'http://localhost:3000';
+                    const originUrl = window.location.origin || 'http://localhost:3000';
+                    const testUrl = `${originUrl}/?challenger=${resultData.score}&type=${encodeURIComponent(resultData.typeLabel || 'Lateral Alchemist')}`;
                     const c = resultData.categories || {};
-                    const statsSummary = `Logic: ${c.logic || 85} | Pattern: ${c.pattern || 85} | Spatial: ${c.spatial || 85} | Sequence: ${c.sequence || 85}`;
+                    const statsSummary = `Logic: ${c.logic || 100} | Pattern: ${c.pattern || 100} | Spatial: ${c.spatial || 100} | Sequence: ${c.sequence || 100}`;
                     const shareText = `🧠 TLQ COGNITIVE MATRIX\n👑 Rank: Top ${100 - resultData.percentile}% [${resultData.typeLabel}]\n⚡ Velocity: ${timeFormatted} | C-IQ Index: ${resultData.score}\n🎯 Sub-Indices: ${statsSummary}\n\nCan you surpass my analytical agility? Play right here 👉 ${testUrl}`;
                     
                     let imageBlob = null;
