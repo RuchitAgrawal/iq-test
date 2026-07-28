@@ -458,43 +458,44 @@ button {
 
 /* TLQ VIP Card */
 .tlq-vip-card {
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-    border: 2px solid var(--primary);
-    border-radius: 20px;
-    padding: 28px 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(59, 130, 246, 0.1);
+    background: var(--surface2);
+    border: 1px solid var(--amber);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 32px 26px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
     position: relative;
     overflow: hidden;
-}
-
-.tlq-vip-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 150px;
-    height: 150px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
-    pointer-events: none;
+    text-align: center;
 }
 
 .vip-badge {
-    background: #1e293b;
-    color: #38bdf8;
-    border-color: #38bdf8;
+    display: inline-block;
+    background: var(--bg);
+    color: var(--amber);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
 }
 
 .tlq-vip-card h3 {
+    font-family: var(--font-serif);
     font-size: 24px;
+    font-weight: 700;
     color: #ffffff;
     margin-bottom: 12px;
 }
 
 .tlq-vip-card p {
-    color: #94a3b8;
+    color: var(--text-dim);
     font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 22px;
+    line-height: 1.6;
+    margin-bottom: 24px;
 }
 
 .tlq-btn-group {
@@ -506,38 +507,43 @@ button {
 .tlq-action-btn {
     display: inline-block;
     width: 100%;
-    padding: 16px 24px;
-    font-weight: 800;
-    font-size: 16px;
+    padding: 15px 24px;
+    font-weight: 700;
+    font-size: 15px;
     text-decoration: none;
-    border-radius: 12px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .primary-tlq {
-    background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    background: var(--amber);
+    border: 1px solid var(--amber);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(232, 148, 58, 0.2);
 }
 
 .primary-tlq:hover {
-    background: #38bdf8;
-    color: #0f172a;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000000;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
 }
 
 .discord-tlq {
-    background: #5865f2;
+    background: var(--surface);
+    border: 1px solid #5865f2;
     color: #ffffff;
-    box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.2);
 }
 
 .discord-tlq:hover {
-    background: #4752c4;
+    background: #5865f2;
     color: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(88, 101, 242, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.35);
 }
 
 @keyframes slideUp {
@@ -885,31 +891,35 @@ button {
 
 /* Enigma Gate & Discord Rank Banner */
 .discord-verification-banner {
-    background: rgba(168, 85, 247, 0.12);
-    border: 1px dashed #a855f7;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 22px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid #5865f2;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 24px;
     text-align: left;
 }
 
 .discord-tag {
     font-size: 11px;
-    font-weight: 800;
-    color: #c084fc;
+    font-weight: 700;
+    color: #5865f2;
     display: block;
     margin-bottom: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .discord-verification-banner p {
     font-size: 13px;
-    color: #e2e8f0;
+    color: var(--text-dim);
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .discord-verification-banner p strong {
-    color: #c084fc;
+    color: #ffffff;
+    font-weight: 600;
 }
 
 /* Audio Toggle & Speed Combo Toast */
