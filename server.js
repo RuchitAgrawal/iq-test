@@ -83,28 +83,28 @@ app.post('/api/score', (req, res) => {
     };
     
     let typeLabel = "Lateral Alchemist";
-    let accentColor = "#f59e0b";
-    let description = "Holistic mental agility blending creative leaps with structured calculation";
+    let accentColor = "#e8943a";
+    let description = "Holistic mental agility blending intuitive analytical leaps with structured calculation";
     
     const maxCat = Object.entries(categories).sort((a, b) => b[1] - a[1])[0] || ['logic', 0];
     const totalCatScore = Object.values(categories).reduce((a, b) => a + b, 0);
     
     if (time_taken <= 75 && score >= 100) {
         typeLabel = "Neural Speedster";
-        accentColor = "#ec4899";
-        description = "Rapid instinct and high-velocity pattern processing under time pressure";
+        accentColor = "#c9a84c";
+        description = "Rapid analytical instinct and high-velocity pattern deduction under intense time pressure";
     } else if (maxCat[0] === 'logic' && maxCat[1] > (totalCatScore * 0.3)) {
         typeLabel = "Logic Weaver";
-        accentColor = "#3b82f6";
-        description = "Mastery of rigorous deductive reasoning and structural analytical depth";
+        accentColor = "#d4af37";
+        description = "Mastery of rigorous deductive reasoning and structured evidential verification";
     } else if ((maxCat[0] === 'pattern' || maxCat[0] === 'sequence') && maxCat[1] > (totalCatScore * 0.3)) {
         typeLabel = "Pattern Seer";
-        accentColor = "#a855f7";
-        description = "Unusually heightened awareness of abstract geometries and mathematical ciphers";
+        accentColor = "#e6a817";
+        description = "Heightened recognition of symbolic geometries and complex numerical ciphers";
     } else if (maxCat[0] === 'spatial' && maxCat[1] > (totalCatScore * 0.3)) {
         typeLabel = "Spatial Architect";
-        accentColor = "#10b981";
-        description = "Exceptional three-dimensional mental rotation and spatial geometry insight";
+        accentColor = "#f0b146";
+        description = "Exceptional three-dimensional visual reasoning and structural transformation capacity";
     }
     
     const detailedData = {
@@ -146,12 +146,14 @@ app.get('/api/image/:id', async (req, res) => {
         db.get("SELECT * FROM results WHERE id = ?", [req.params.id], async (err, row) => {
             if (err || !row) return res.status(404).send('Not found');
             
-            let meta = { archetype: 'Lateral Alchemist', accentColor: '#3b82f6', description: 'Holistic mental agility blending creativity with structured calculation', categories: { logic: 0, pattern: 0, spatial: 0, sequence: 0 } };
+            let meta = { archetype: 'Lateral Alchemist', accentColor: '#e8943a', description: 'Holistic mental agility blending intuitive analytical leaps with structured calculation', categories: { logic: 0, pattern: 0, spatial: 0, sequence: 0 } };
             try {
                 meta = { ...meta, ...JSON.parse(row.category_breakdown) };
             } catch (e) {
                 console.error('Failed parsing breakdown for image', e);
             }
+            
+            const accent = meta.accentColor || '#e8943a';
             
             const svg = await satori(
                 {
@@ -164,8 +166,8 @@ app.get('/api/image/:id', async (req, res) => {
                             alignItems: 'center',
                             width: 1200,
                             height: 630,
-                            backgroundColor: '#090d16',
-                            padding: 30,
+                            backgroundColor: '#000000',
+                            padding: 32,
                             fontFamily: 'Arial'
                         },
                         children: [
@@ -178,10 +180,11 @@ app.get('/api/image/:id', async (req, res) => {
                                         justifyContent: 'space-between',
                                         width: '100%',
                                         height: '100%',
-                                        backgroundColor: '#111827',
-                                        border: `4px solid ${meta.accentColor}`,
-                                        borderRadius: 24,
-                                        padding: 45
+                                        backgroundColor: '#080808',
+                                        border: '2px solid #222222',
+                                        borderLeft: `14px solid ${accent}`,
+                                        borderRadius: 12,
+                                        padding: 48
                                     },
                                     children: [
                                         // Header
@@ -199,15 +202,15 @@ app.get('/api/image/:id', async (req, res) => {
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { fontSize: 24, color: '#64748b', fontWeight: 800, letterSpacing: 2 },
-                                                            children: 'TLQ COGNITIVE DIAGNOSTIC'
+                                                            style: { fontSize: 20, color: '#888888', fontWeight: 700, letterSpacing: 4 },
+                                                            children: 'THE LAST QUESTION // COGNITIVE DOSSIER'
                                                         }
                                                     },
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { display: 'flex', backgroundColor: '#1e293b', color: '#10b981', padding: '10px 24px', borderRadius: 30, fontSize: 26, fontWeight: 800 },
-                                                            children: `TOP ${100 - row.percentile}% RANK`
+                                                            style: { display: 'flex', backgroundColor: '#111111', color: accent, border: '1px solid #333333', padding: '8px 20px', borderRadius: 6, fontSize: 20, fontWeight: 700, letterSpacing: 2 },
+                                                            children: `TOP ${100 - row.percentile}% PERCENTILE`
                                                         }
                                                     }
                                                 ]
@@ -234,14 +237,14 @@ app.get('/api/image/:id', async (req, res) => {
                                                                 {
                                                                     type: 'div',
                                                                     props: {
-                                                                        style: { fontSize: 110, fontWeight: 800, color: '#f8fafc', lineHeight: 1 },
+                                                                        style: { fontSize: 118, fontWeight: 700, color: '#ffffff', lineHeight: 1 },
                                                                         children: row.score.toString()
                                                                     }
                                                                 },
                                                                 {
                                                                     type: 'div',
                                                                     props: {
-                                                                        style: { fontSize: 22, color: '#94a3b8', marginTop: 12, fontWeight: 600 },
+                                                                        style: { fontSize: 20, color: accent, marginTop: 14, fontWeight: 700, letterSpacing: 3 },
                                                                         children: 'COGNITIVE IQ INDEX'
                                                                     }
                                                                 }
@@ -251,19 +254,19 @@ app.get('/api/image/:id', async (req, res) => {
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { display: 'flex', flexDirection: 'column', maxWidth: 580, alignItems: 'flex-end' },
+                                                            style: { display: 'flex', flexDirection: 'column', maxWidth: 560, alignItems: 'flex-end' },
                                                             children: [
                                                                 {
                                                                     type: 'div',
                                                                     props: {
-                                                                        style: { fontSize: 44, fontWeight: 800, color: meta.accentColor, textAlign: 'right' },
+                                                                        style: { fontSize: 44, fontWeight: 700, color: '#ffffff', textAlign: 'right', letterSpacing: 1 },
                                                                         children: meta.archetype.toUpperCase()
                                                                     }
                                                                 },
                                                                 {
                                                                     type: 'div',
                                                                     props: {
-                                                                        style: { fontSize: 22, color: '#cbd5e1', textAlign: 'right', marginTop: 16, lineHeight: 1.4 },
+                                                                        style: { fontSize: 22, color: '#999999', textAlign: 'right', marginTop: 16, lineHeight: 1.5 },
                                                                         children: meta.description
                                                                     }
                                                                 }
@@ -283,22 +286,22 @@ app.get('/api/image/:id', async (req, res) => {
                                                     justifyContent: 'space-between',
                                                     alignItems: 'center',
                                                     width: '100%',
-                                                    borderTop: '2px solid #334155',
-                                                    paddingTop: 24
+                                                    borderTop: '1px solid #222222',
+                                                    paddingTop: 26
                                                 },
                                                 children: [
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { fontSize: 19, color: '#94a3b8', fontWeight: 600 },
-                                                            children: `Logic (${meta.categories?.logic || 85}) | Pattern (${meta.categories?.pattern || 85}) | Spatial (${meta.categories?.spatial || 85}) | Sequence (${meta.categories?.sequence || 85})`
+                                                            style: { fontSize: 18, color: '#777777', fontWeight: 700, letterSpacing: 1 },
+                                                            children: `Logic (${meta.categories?.logic || 100}) | Pattern (${meta.categories?.pattern || 100}) | Spatial (${meta.categories?.spatial || 100})`
                                                         }
                                                     },
                                                     {
                                                         type: 'div',
                                                         props: {
-                                                            style: { fontSize: 24, fontWeight: 800, color: '#3b82f6' },
-                                                            children: 'Can you beat this score in TLQ?'
+                                                            style: { fontSize: 22, fontWeight: 700, color: accent, letterSpacing: 3 },
+                                                            children: 'THELASTQUESTION.IO'
                                                         }
                                                     }
                                                 ]
