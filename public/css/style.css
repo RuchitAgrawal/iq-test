@@ -1,52 +1,67 @@
 :root {
-    --bg-main: #090d16;
-    --card-bg: rgba(24, 32, 54, 0.85);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --primary: #3b82f6;
-    --primary-hover: #2563eb;
-    --accent: #10b981;
-    --accent-glow: rgba(16, 185, 129, 0.2);
-    --warning: #f59e0b;
-    --purple: #a855f7;
-    --pink: #ec4899;
-    --card-border: rgba(255, 255, 255, 0.08);
+    --bg: #080808;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #d8d8d8;
+    --text-dim: #777777;
+    --amber: #e8943a;
+    --amber-dim: #8b5520;
+    --amber-glow: rgba(232, 148, 58, 0.15);
+    --gold: #c9a84c;
+    --red: #c0392b;
+    --green: #27ae60;
+    --radius: 6px;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+    
+    /* Legacy aliases mapped to TLQ Noir */
+    --bg-main: var(--bg);
+    --card-bg: var(--surface);
+    --text-main: var(--text);
+    --text-muted: var(--text-dim);
+    --primary: var(--amber);
+    --primary-hover: var(--gold);
+    --accent: var(--gold);
+    --accent-glow: var(--amber-glow);
+    --warning: var(--amber);
+    --card-border: var(--border);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
 }
 
 body {
-    background: radial-gradient(circle at 15% 20%, #1e1e40, var(--bg-main) 70%);
-    background-attachment: fixed;
-    color: var(--text-main);
+    background: var(--bg);
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px 10px;
+    padding: 30px 15px;
     overflow-x: hidden;
+    line-height: 1.6;
 }
 
 .container {
     width: 100%;
-    max-width: 600px;
+    max-width: 640px;
 }
 
 .screen {
     display: none;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--card-border);
-    padding: 42px 36px;
-    border-radius: 24px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(59, 130, 246, 0.05);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 44px 40px;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
     text-align: center;
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.35s ease forwards;
 }
 
 .screen.active {
