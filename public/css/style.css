@@ -582,15 +582,15 @@ button {
 }
 
 .modal-content {
-    background: #101726;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     width: 100%;
-    max-width: 500px;
-    padding: 30px 24px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(59, 130, 246, 0.15);
+    max-width: 520px;
+    padding: 32px 28px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
     text-align: center;
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.3s ease forwards;
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -599,51 +599,54 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .modal-header h3 {
-    font-size: 20px;
-    font-weight: 800;
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 700;
     color: #ffffff;
 }
 
 .close-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #ffffff;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius);
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .close-btn:hover {
-    background: rgba(239, 68, 68, 0.8);
+    background: var(--amber-dim);
+    border-color: var(--amber);
+    color: #ffffff;
 }
 
 .modal-subtitle {
     font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
+    color: var(--text-dim);
+    margin-bottom: 22px;
     line-height: 1.5;
     text-align: left;
 }
 
 .card-preview-wrapper {
     width: 100%;
-    max-height: 200px;
+    max-height: 220px;
     overflow: hidden;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 14px;
-    background: #090d16;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    background: var(--bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -658,105 +661,109 @@ button {
 
 .clipboard-notice {
     font-size: 13px;
-    color: var(--accent);
-    background: rgba(16, 185, 129, 0.12);
+    color: var(--amber);
+    background: var(--bg);
     padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    margin-bottom: 22px;
+    border-radius: var(--radius);
+    border: 1px solid var(--amber);
+    margin-bottom: 24px;
     font-weight: 600;
 }
 
 .app-selector-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .app-btn {
-    padding: 15px 20px;
-    font-weight: 800;
-    font-size: 15px;
-    border-radius: 12px;
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: var(--radius);
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .whatsapp-btn {
-    background: #25d366;
+    background: #1c3b2b;
+    border: 1px solid #27ae60;
     color: #ffffff;
-    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
 }
 
 .whatsapp-btn:hover {
-    background: #20bd5a;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(37, 211, 102, 0.45);
+    background: #27ae60;
+    color: #000000;
+    transform: translateY(-1px);
 }
 
 .telegram-btn {
-    background: #0088cc;
+    background: #153448;
+    border: 1px solid #2980b9;
     color: #ffffff;
-    box-shadow: 0 8px 20px rgba(0, 136, 204, 0.3);
 }
 
 .telegram-btn:hover {
-    background: #007bb5;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(0, 136, 204, 0.45);
+    background: #2980b9;
+    color: #000000;
+    transform: translateY(-1px);
 }
 
 .twitter-btn {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface2);
     color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border);
 }
 
 .twitter-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
+    background: var(--bg);
+    border-color: var(--text-dim);
+    transform: translateY(-1px);
 }
 
 .download-btn {
-    background: linear-gradient(135deg, var(--purple) 0%, #7e22ce 100%);
-    color: #ffffff;
-    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    background: var(--amber);
+    color: #000000;
+    border: 1px solid var(--amber);
 }
 
 .download-btn:hover {
-    background: linear-gradient(135deg, #b873ff 0%, #8b30e0 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(168, 85, 247, 0.45);
+    background: var(--gold);
+    border-color: var(--gold);
+    transform: translateY(-1px);
 }
 
 /* Single Message Guide in Modal */
 .single-msg-guide {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 22px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 24px;
     text-align: left;
 }
 
 .guide-header {
-    font-size: 12px;
-    font-weight: 800;
-    color: #38bdf8;
-    letter-spacing: 0.5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     margin-bottom: 8px;
 }
 
 .single-msg-guide p {
     font-size: 13px;
-    color: var(--text-muted);
+    color: var(--text-dim);
     line-height: 1.5;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .single-msg-guide p strong {
@@ -771,20 +778,23 @@ button {
 
 .sub-copy-btn {
     padding: 10px 14px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+    border-radius: var(--radius);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .sub-copy-btn:hover {
-    background: rgba(56, 189, 248, 0.2);
-    border-color: #38bdf8;
+    background: var(--bg);
+    border-color: var(--amber);
+    color: var(--amber);
     transform: translateY(-1px);
 }
 
