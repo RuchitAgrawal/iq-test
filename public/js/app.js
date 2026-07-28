@@ -35,14 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let questionStartTime = Date.now();
     let audioEnabled = true;
 
-    const audioToggleBtn = document.getElementById('audio-toggle-btn');
-    if (audioToggleBtn) {
-        audioToggleBtn.addEventListener('click', () => {
-            audioEnabled = !audioEnabled;
-            audioToggleBtn.innerText = audioEnabled ? 'AUDIO ON' : 'AUDIO MUTED';
-        });
-    }
-
     function playTone(type) {
         if (!audioEnabled || (typeof window.AudioContext === 'undefined' && typeof window.webkitAudioContext === 'undefined')) return;
         try {
