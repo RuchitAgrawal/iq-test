@@ -37,10 +37,28 @@ const db = new sqlite3.Database(dbPath, (err) => {
             db.run(`CREATE TABLE IF NOT EXISTS telegram_scores (
                 group_id TEXT,
                 user_id TEXT,
+                username TEXT,
                 best_score REAL,
                 archetype TEXT,
                 last_played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (group_id, user_id)
+            )`);
+
+            // Discord tables
+            db.run(`CREATE TABLE IF NOT EXISTS discord_scores (
+                guild_id TEXT,
+                user_id TEXT,
+                username TEXT,
+                best_score REAL,
+                archetype TEXT,
+                last_played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (guild_id, user_id)
+            )`);
+
+            db.run(`CREATE TABLE IF NOT EXISTS discord_guilds (
+                guild_id TEXT PRIMARY KEY,
+                result_channel_id TEXT,
+                added_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )`);
         });
     }

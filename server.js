@@ -18,6 +18,9 @@ app.get('/api/health', (req, res) => {
 // Import database
 const db = require('./database');
 
+// Import shared quiz engine (also used by bots)
+const engine = require('./quiz-engine');
+
 // API: Get randomized balanced question set
 app.get('/api/questions', (req, res) => {
     // Select 20 random questions sorted by difficulty ascending after fetching
@@ -342,4 +345,28 @@ app.get('/api/image/:id', async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+
+    // Mount Telegram bot (grammy) if token is configured
+    if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_BOT_TOKEN !== 'DUMMY_TOKEN') {
+        try {
+            require('./telegram/bot');
+            console.log('[bot] Telegram bot active (long-polling)');
+        } catch (e) {
+            console.error('[bot] Telegram bot failed to start:', e.message);
+        }
+    } else {
+        console.log('[bot] Telegram bot skipped — TELEGRAM_BOT_TOKEN not set');
+    }
+
+    // Mount Discord bot if token is configured
+    if (process.env.DISCORD_BOT_TOKEN) {
+        try {
+            require('./discord/bot');
+            console.log('[bot] Discord bot active');
+        } catch (e) {
+            console.error('[bot] Discord bot failed to start:', e.message);
+        }
+    } else {
+        console.log('[bot] Discord bot skipped — DISCORD_BOT_TOKEN not set');
+    }
 });
