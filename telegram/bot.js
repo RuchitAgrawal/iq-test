@@ -217,4 +217,230 @@ bot.command('rank', async (ctx) => {
     );
 });
 
+// ---------------------------------------------------------------------------
+// Quiz flow — begin, resume, restart
+// ---------------------------------------------------------------------------
+
+/**
+ * Start a fresh quiz session for this user.
+ */
+async function beginQuiz(ctx) {
+    const platform = 'telegram';
+    const userId   = String(ctx.from?.id);
+    const chatId   = String(ctx.chat?.id);
+    const username = ctx.from?.username || null;
+
+    await ctx.answerCallbackQuery();
+
+    const questions = await engine.getQuestions();
+    sessions.createSession(platform, userId, chatId, { username, questions });
+    await sendQuestion(ctx, platform, userId);
+}
+
+/**
+ * Send the current question for this session.
+ */
+async function sendQuestion(ctx, platform, userId) {
+    const session = sessions.getSession(platform, userId);
+    if (!session || session.finished) return;
+
+    const q       = session.questions[session.currentIndex];
+    const total   = session.questions.length;
+    const timeStr = sessions.formatElapsed(session);
+
+    const { text, keyboard } = buildQuestionPayload(q, session.currentIndex, total, timeStr);
+
+    sessions.updateSession(platform, userId, { questionStart: Date.now() });
+
+    // If we have a pre-rendered image, send it before the question text
+    if (q.imagePath) {
+        try {
+            const { InputFile } = require('grammy');
+            await ctx.replyWithPhoto(new InputFile(q.imagePath));
+        } catch (_) {
+            // Non-fatal — fall through to text question
+        }
+    }
+
+    await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard });
+}
+
+bot.callbackQuery('begin', beginQuiz);
+
+bot.callbackQuery('resume', async (ctx) => {
+    await ctx.answerCallbackQuery();
+    const platform = 'telegram';
+    const userId   = String(ctx.from?.id);
+    await sendQuestion(ctx, platform, userId);
+});
+
+bot.callbackQuery('restart', async (ctx) => {
+    const platform = 'telegram';
+    const userId   = String(ctx.from?.id);
+    sessions.deleteSession(platform, userId);
+    await beginQuiz(ctx);
+});
+
+// ---------------------------------------------------------------------------
+// Answer handling  (callback data format: "ans:{questionId}:{optionIndex}")
+// ---------------------------------------------------------------------------
+
+bot.callbackQuery(/^ans:(.+):(\d+)$/, async (ctx) => {
+    const platform = 'telegram';
+    const userId   = String(ctx.from?.id);
+    const session  = sessions.getSession(platform, userId);
+
+    if (!session || session.finished) {
+        await ctx.answerCallbackQuery({ text: 'No active session. Type /iqtest to start.' });
+        return;
+    }
+
+    const [, questionId, optionIndexStr] = ctx.match;
+    const q = session.questions[session.currentIndex];
+
+    // Guard: callback must match the current question
+    if (q.id !== questionId) {
+        await ctx.answerCallbackQuery({ text: 'Already answered — please wait for the next question.' });
+        return;
+    }
+
+    const optionIndex    = parseInt(optionIndexStr, 10);
+    const selectedOption = q.options[optionIndex];
+    const isCorrect      = selectedOption === q.answer;
+    const timeSpent      = (Date.now() - session.questionStart) / 1000;
+
+    // Update score
+    let { score, categoryScores } = session;
+    if (isCorrect) {
+        const pts = q.difficulty || 2;
+        score += pts;
+        const cat = q.category || 'logic';
+        categoryScores = { ...categoryScores, [cat]: (categoryScores[cat] || 0) + pts };
+    }
+
+    const nextIndex = session.currentIndex + 1;
+    sessions.updateSession(platform, userId, {
+        score,
+        categoryScores,
+        currentIndex: nextIndex,
+    });
+
+    // Speed feedback toast
+    const feedbackText = isCorrect
+        ? (timeSpent <= 5 ? 'Rapid Response Logged' : 'Correct')
+        : 'Incorrect';
+    await ctx.answerCallbackQuery({ text: feedbackText });
+
+    // Next question or finish
+    if (nextIndex >= session.questions.length) {
+        await finishQuiz(ctx, platform, userId);
+    } else {
+        await sendQuestion(ctx, platform, userId);
+    }
+});
+});
+
+// ---------------------------------------------------------------------------
+// Finish quiz — calculate result, send card, post to group
+// ---------------------------------------------------------------------------
+
+async function finishQuiz(ctx, platform, userId) {
+    const session = sessions.getSession(platform, userId);
+    if (!session) return;
+
+    sessions.updateSession(platform, userId, { finished: true });
+
+    const timeTaken  = sessions.elapsedSeconds(session);
+    const result     = engine.calculateScore(session.score, session.categoryScores, timeTaken);
+    const sessionId  = `tg-${userId}-${Date.now()}`;
+
+    await ctx.reply(
+        '<i>Computing your cognitive dossier…</i>',
+        { parse_mode: 'HTML' }
+    );
+
+    let resultId;
+    try {
+        resultId = await engine.saveResult(sessionId, result, timeTaken);
+    } catch (err) {
+        console.error('[telegram] Failed to save result:', err);
+        await ctx.reply('Assessment complete, but dossier generation encountered an error. Please try again.');
+        sessions.deleteSession(platform, userId);
+        return;
+    }
+
+    // Build caption text
+    const appUrl   = process.env.APP_URL || 'https://thelastquestion.io';
+    const testUrl  = `${appUrl}/?utm_source=iq-test&utm_medium=sidegame&utm_campaign=iq-test`;
+    const caption  = [
+        '<b>COGNITIVE DOSSIER CONFIRMED</b>',
+        '',
+        `Archetype: <b>${result.typeLabel}</b>`,
+        `C-IQ Index: <b>${result.score}</b>  |  Rank: <b>Top ${100 - result.percentile}%</b>`,
+        `Time: <b>${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s</b>`,
+        '',
+        `Logic: ${result.categories.logic}  |  Pattern: ${result.categories.pattern}  |  Spatial: ${result.categories.spatial}  |  Sequence: ${result.categories.sequence}`,
+        '',
+        `<a href="${testUrl}">Access The Last Question — Enigma Arena</a>`,
+        `<a href="https://discord.gg/V3RGHePW7">Claim Your Rank on Discord</a>`,
+    ].join('\n');
+
+    // Generate and send the PNG result card
+    try {
+        const { InputFile } = require('grammy');
+        const pngBuf = await engine.generateCardBuffer(resultId);
+        await ctx.replyWithPhoto(new InputFile(pngBuf, 'tlq-dossier.png'), {
+            caption,
+            parse_mode: 'HTML',
+        });
+    } catch (err) {
+        console.error('[telegram] Card generation failed:', err);
+        // Fallback: send text only
+        await ctx.reply(caption, { parse_mode: 'HTML' });
+    }
+
+    // If in a group, also post the result publicly in that chat
+    const chatId = session.chatId;
+    if (chatId && chatId !== String(session.userId)) {
+        try {
+            upsertTelegramScore(chatId, userId, session.username, result.score, result.typeLabel);
+
+            const username   = session.username ? `@${session.username}` : `User ${userId.slice(0, 8)}`;
+            const groupCapt  = [
+                `<b>${username} completed the TLQ Cognitive Assessment</b>`,
+                '',
+                `Archetype: <b>${result.typeLabel}</b>  |  C-IQ: <b>${result.score}</b>`,
+                `Rank: Top ${100 - result.percentile}%  |  Time: ${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`,
+                '',
+                'Think you can surpass this result? /iqtest',
+            ].join('\n');
+
+            const pngBuf = await engine.generateCardBuffer(resultId);
+            const { InputFile } = require('grammy');
+            await bot.api.sendPhoto(chatId, new InputFile(pngBuf, 'tlq-dossier.png'), {
+                caption: groupCapt,
+                parse_mode: 'HTML',
+            });
+        } catch (err) {
+            console.error('[telegram] Group post failed:', err.message);
+        }
+    }
+
+    sessions.deleteSession(platform, userId);
+}
+
+// ---------------------------------------------------------------------------
+// Error handling & long-polling start
+// ---------------------------------------------------------------------------
+
+bot.catch((err) => {
+    const ctx = err.ctx;
+    console.error(`[telegram] Error while handling update ${ctx.update.update_id}:`, err.error);
+});
+
+// Start long-polling (will block until process exit)
+bot.start({
+    onStart: (info) => console.log(`[telegram] Bot @${info.username} started in long-polling mode`),
+}).catch((err) => console.error('[telegram] Bot crashed:', err));
+
 module.exports = { bot };
