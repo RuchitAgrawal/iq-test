@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (audioToggleBtn) {
         audioToggleBtn.addEventListener('click', () => {
             audioEnabled = !audioEnabled;
-            audioToggleBtn.innerText = audioEnabled ? '🔊 On' : '🔇 Muted';
+            audioToggleBtn.innerText = audioEnabled ? 'AUDIO ON' : 'AUDIO MUTED';
         });
     }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
             const secs = String(elapsedSeconds % 60).padStart(2, '0');
             if (timerDisplay) {
-                timerDisplay.innerText = `⏱️ ${mins}:${secs}`;
+                timerDisplay.innerText = `${mins}:${secs}`;
             }
         }, 1000);
     }
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const statsGrid = document.getElementById('stats-grid');
         if (!statsGrid) return;
         
-        const color = accentColor || '#3b82f6';
+        const color = accentColor || '#e8943a';
         const logicVal = Number(categories.logic || 78);
         const patternVal = Number(categories.pattern || 78);
         const spatialVal = Number(categories.spatial || 78);
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <svg viewBox="0 0 360 260" style="width: 100%; max-width: 360px; overflow: visible;">
                     <polygon points="180,105 205,130 180,155 155,130" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
                     <polygon points="180,80 230,130 180,180 130,130" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-                    <polygon points="180,55 255,130 180,205 105,130" fill="rgba(30,41,59,0.35)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                    <polygon points="180,55 255,130 180,205 105,130" fill="rgba(17,17,17,0.7)" stroke="rgba(232,148,58,0.3)" stroke-width="1.5"/>
                     
                     <line x1="180" y1="55" x2="180" y2="205" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
                     <line x1="105" y1="130" x2="255" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
@@ -249,10 +249,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <circle id="circle-spatial" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     <circle id="circle-sequence" cx="180" cy="130" r="4.5" fill="#ffffff" stroke="${color}" stroke-width="2"/>
                     
-                    <text id="lbl-logic" x="180" y="32" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Logic (78)</text>
-                    <text id="lbl-pattern" x="268" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="start">Pattern (78)</text>
-                    <text id="lbl-spatial" x="180" y="235" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="middle">Spatial (78)</text>
-                    <text id="lbl-sequence" x="92" y="134" fill="#f8fafc" font-size="13" font-weight="800" text-anchor="end">Sequence (78)</text>
+                    <text id="lbl-logic" x="180" y="32" fill="#dddddd" font-size="13" font-weight="700" text-anchor="middle">Logic (78)</text>
+                    <text id="lbl-pattern" x="268" y="134" fill="#dddddd" font-size="13" font-weight="700" text-anchor="start">Pattern (78)</text>
+                    <text id="lbl-spatial" x="180" y="235" fill="#dddddd" font-size="13" font-weight="700" text-anchor="middle">Spatial (78)</text>
+                    <text id="lbl-sequence" x="92" y="134" fill="#dddddd" font-size="13" font-weight="700" text-anchor="end">Sequence (78)</text>
                 </svg>
             </div>
         `;
@@ -376,16 +376,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (shareBtn) {
-                shareBtn.innerText = '⚡ Share Matrix & Select App';
+                shareBtn.innerText = 'Export Cognitive Profile';
                 shareBtn.onclick = async () => {
-                    shareBtn.innerText = 'Preparing Challenge Card...';
+                    shareBtn.innerText = 'Compiling Profile Dossier...';
                     shareBtn.disabled = true;
 
                     const originUrl = window.location.origin || 'http://localhost:3000';
                     const testUrl = `${originUrl}/?challenger=${resultData.score}&type=${encodeURIComponent(resultData.typeLabel || 'Lateral Alchemist')}`;
                     const c = resultData.categories || {};
                     const statsSummary = `Logic: ${c.logic || 100} | Pattern: ${c.pattern || 100} | Spatial: ${c.spatial || 100} | Sequence: ${c.sequence || 100}`;
-                    const shareText = `🧠 TLQ COGNITIVE MATRIX\n👑 Rank: Top ${100 - resultData.percentile}% [${resultData.typeLabel}]\n⚡ Velocity: ${timeFormatted} | C-IQ Index: ${resultData.score}\n🎯 Sub-Indices: ${statsSummary}\n\nCan you surpass my analytical agility? Play right here 👉 ${testUrl}`;
+                    const shareText = `THE LAST QUESTION // COGNITIVE DOSSIER\nArchetype: ${resultData.typeLabel} [Top ${100 - resultData.percentile}%]\nCognitive Index (C-IQ): ${resultData.score} | Velocity: ${timeFormatted}\nMetrics: ${statsSummary}\n\nAssess your deductive analytical capabilities: ${testUrl}`;
                     
                     let imageBlob = null;
                     let imageFile = null;
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.error('Failed to fetch card image blob:', fetchErr);
                     }
 
-                    shareBtn.innerText = '⚡ Share Matrix & Select App';
+                    shareBtn.innerText = 'Export Cognitive Profile';
                     shareBtn.disabled = false;
 
                     if (navigator.canShare && imageFile && navigator.canShare({ files: [imageFile] })) {
@@ -439,8 +439,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 try {
                                     const item = new ClipboardItem({ [imageBlob.type || 'image/png']: imageBlob });
                                     await navigator.clipboard.write([item]);
-                                    copyImgBtn.innerText = '✅ Image Copied!';
-                                    setTimeout(() => { copyImgBtn.innerText = '🖼️ 1. Re-Copy Image'; }, 2500);
+                                    copyImgBtn.innerText = 'Copied To Clipboard';
+                                    setTimeout(() => { copyImgBtn.innerText = '1. Copy Dossier Image'; }, 2500);
                                 } catch (err) {
                                     console.error('Image copy failed:', err);
                                 }
@@ -451,8 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             copyTxtBtn.onclick = async () => {
                                 try {
                                     await navigator.clipboard.writeText(shareText);
-                                    copyTxtBtn.innerText = '✅ Caption Copied!';
-                                    setTimeout(() => { copyTxtBtn.innerText = '📝 2. Copy Caption Text'; }, 2500);
+                                    copyTxtBtn.innerText = 'Copied To Clipboard';
+                                    setTimeout(() => { copyTxtBtn.innerText = '2. Copy Diagnostic Text'; }, 2500);
                                 } catch (err) {
                                     console.error('Text copy failed:', err);
                                 }
@@ -506,16 +506,16 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             document.getElementById('score-display').innerText = `Cognitive IQ: ${fallbackIq} (Average Base: 100)`;
             document.getElementById('type-description').innerText = 'Completed analytical session.';
-            renderCategoryStats(fallbackCats, '#3b82f6');
+            renderCategoryStats(fallbackCats, '#e8943a');
         }
     }
 
     startBtn.addEventListener('click', () => {
-        startBtn.innerText = 'Initializing Matrix...';
+        startBtn.innerText = 'Loading Assessment...';
         startBtn.disabled = true;
         fetchQuestions().then(() => {
             showScreen('quiz');
-            startBtn.innerText = 'Launch Diagnostic';
+            startBtn.innerText = 'Begin Assessment';
             startBtn.disabled = false;
         });
     });
