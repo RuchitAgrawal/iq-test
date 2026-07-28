@@ -13,11 +13,46 @@ const { v4: uuidv4 } = require('uuid');
 const db   = require('./database');
 
 // ---------------------------------------------------------------------------
+// Visual Asset Map — pre-rendered PNG paths for visual questions
+// ---------------------------------------------------------------------------
+
+const ASSETS_DIR = path.join(__dirname, 'public', 'question-assets');
+
+/**
+ * Map of questionId -> absolute PNG file path for visual questions.
+ * Populated lazily on first getQuestions() call.
+ * @type {Map<string, string>}
+ */
+const visualAssetMap = new Map();
+
+/** Load pre-rendered question PNGs from the assets directory into the map. */
+function loadVisualAssets() {
+    if (!fs.existsSync(ASSETS_DIR)) return;
+    const files = fs.readdirSync(ASSETS_DIR);
+    for (const file of files) {
+        // Match main question images: q-{id}.png (not option images)
+        const match = file.match(/^q-(.+)\.png$/);
+        if (match && !file.includes('-opt-')) {
+            const questionId = match[1];
+            visualAssetMap.set(questionId, path.join(ASSETS_DIR, file));
+        }
+    }
+    if (visualAssetMap.size > 0) {
+        console.log(`[quiz-engine] Loaded ${visualAssetMap.size} pre-rendered visual question asset(s)`);
+    }
+}
+
+// Run once at module load
+loadVisualAssets();
+
+// ---------------------------------------------------------------------------
 // Question Fetching
 // ---------------------------------------------------------------------------
 
 /**
  * Fetch a randomised, difficulty-sorted question set from the database.
+ * Visual questions are annotated with an `imagePath` field pointing to
+ * the pre-rendered PNG (if available) for use by bot delivery layers.
  * @returns {Promise<Array>} Resolved question array
  */
 function getQuestions() {
@@ -32,6 +67,8 @@ function getQuestions() {
                 ...r,
                 options:     JSON.parse(r.options),
                 options_svg: r.options_svg ? JSON.parse(r.options_svg) : null,
+                // Bot delivery: path to pre-rendered PNG (null if not available)
+                imagePath:   visualAssetMap.get(r.id) || null,
             }));
 
             resolve(formatted);

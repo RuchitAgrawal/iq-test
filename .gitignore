@@ -3,3 +3,4 @@ node_modules/
 iqtest.db
 iqtest.db-journal
 *.log
+public/question-assets/

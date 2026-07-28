@@ -100,18 +100,25 @@ async function main() {
 }
 
 /**
- * If the SVG string is an inline fragment (no xml declaration / root <svg>),
- * wrap it so resvg can parse it correctly.
+ * Ensure the SVG string is a fully valid SVG document with xmlns.
+ * Handles: bare fragments, <svg> tags without xmlns, and complete SVG docs.
  * @param {string} svgStr   Raw SVG markup
- * @param {number} w        Fallback width if viewBox is absent
- * @param {number} h        Fallback height if viewBox is absent
+ * @param {number} w        Fallback width
+ * @param {number} h        Fallback height
  * @returns {string}
  */
 function ensureFullSvg(svgStr, w, h) {
     const trimmed = (svgStr || '').trim();
-    if (trimmed.startsWith('<svg')) return trimmed;
 
-    // Wrap bare content in a root SVG element
+    // Already a well-formed SVG document with xmlns
+    if (trimmed.startsWith('<svg') && trimmed.includes('xmlns')) return trimmed;
+
+    // Has <svg> root but is missing xmlns — inject it
+    if (trimmed.startsWith('<svg')) {
+        return trimmed.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
+    }
+
+    // Bare fragment — wrap in a complete SVG root
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${trimmed}</svg>`;
 }
 
